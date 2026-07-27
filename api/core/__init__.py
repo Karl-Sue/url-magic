@@ -1,0 +1,1 @@
+"""URL magic for long link, QR generator and health check"""
