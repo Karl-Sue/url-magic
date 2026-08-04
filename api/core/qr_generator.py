@@ -1,8 +1,9 @@
 import io
-from typing import Union
+
 import qrcode
 from qrcode.constants import ERROR_CORRECT_M
 from qrcode.image.pil import PilImage
+
 
 def generate_qr_code(
     url: str,

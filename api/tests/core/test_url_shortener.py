@@ -1,5 +1,12 @@
 import pytest
-from core.url_shortener import Base62Encoder, FeistelCipher, SnowflakeGenerator, URLShortener
+
+from core.url_shortener import (
+    Base62Encoder,
+    FeistelCipher,
+    SnowflakeGenerator,
+    URLShortener,
+)
+
 
 def test_base62_encoding_decoding():
     test_numbers = [0, 1, 61, 62, 1000, 123456789, 9876543210]

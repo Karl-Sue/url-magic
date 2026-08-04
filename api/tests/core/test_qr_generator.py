@@ -1,6 +1,6 @@
 import io
 from pathlib import Path
-import pytest
+
 from PIL import Image
 
 from core.qr_generator import generate_qr_code

@@ -1,8 +1,7 @@
 import hashlib
 import hmac
-import time
 import threading
-from typing import Dict, Any, Optional
+import time
 
 BASE62_ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 BASE = len(BASE62_ALPHABET)
@@ -57,7 +56,7 @@ class FeistelCipher:
         self.key = key.encode("utf-8")
 
     def _round_function(self, val: int, round_idx: int) -> int:
-        data = f"{val}:{round_idx}".encode("utf-8")
+        data = f"{val}:{round_idx}".encode()
         h = hmac.new(self.key, data, hashlib.sha256).digest()
         # Take first 4 bytes as integer and mask to half_bits
         hash_int = int.from_bytes(h[:4], byteorder="big")
@@ -160,7 +159,7 @@ class URLShortener:
         self.id_generator = SnowflakeGenerator(worker_id=worker_id)
         self.cipher = FeistelCipher(key=secret_key, bits=bits)
 
-    def generate_short_code(self, numeric_id: Optional[int] = None) -> str:
+    def generate_short_code(self, numeric_id: int | None = None) -> str:
         """
         Generates a unique Base62 short code from a unique numeric ID.
         If numeric_id is not provided, generates a new Snowflake ID.
