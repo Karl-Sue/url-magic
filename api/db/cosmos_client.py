@@ -8,8 +8,8 @@ from azure.cosmos.exceptions import (
     CosmosResourceNotFoundError,
 )
 
-from core.redis import RedisRepository
-from core.url_shortener import Base62Encoder, URLShortener
+from db.redis import RedisRepository
+from services.url_shortener import Base62Encoder, URLShortener
 
 logger = logging.getLogger(__name__)
 

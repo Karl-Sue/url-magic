@@ -1,6 +1,6 @@
 import pytest
 
-from core.url_shortener import (
+from services.url_shortener import (
     Base62Encoder,
     FeistelCipher,
     SnowflakeGenerator,

@@ -1,10 +1,11 @@
 from unittest.mock import AsyncMock
 
 import pytest
-from core.cosmos_client import URLQueryRepository
 from azure.cosmos.exceptions import (
     CosmosResourceExistsError,
 )
+
+from db.cosmos_client import URLQueryRepository
 
 
 @pytest.mark.asyncio

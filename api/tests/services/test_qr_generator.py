@@ -3,7 +3,7 @@ from pathlib import Path
 
 from PIL import Image
 
-from core.qr_generator import generate_qr_code
+from services.qr_generator import generate_qr_code
 
 
 def test_generate_qr_code_valid_png(test_target_url: str):
