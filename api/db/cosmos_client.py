@@ -8,6 +8,7 @@ from azure.cosmos.exceptions import (
     CosmosResourceNotFoundError,
 )
 
+from core.middleware import UrlSecurityMiddleware
 from db.redis import RedisRepository
 from services.url_shortener import Base62Encoder, URLShortener
 
@@ -72,10 +73,14 @@ class URLQueryRepository:
         connection_manager: CosmosConnectionManager | None = None,
         redis_repo: RedisRepository | None = None,
         url_shortener: URLShortener | None = None,
+        security_middleware: UrlSecurityMiddleware | None = None,
     ):
         self.connection_manager = connection_manager or CosmosConnectionManager()
         self.redis_repo = redis_repo or RedisRepository()
         self.url_shortener = url_shortener or URLShortener()
+        self.security_middleware = security_middleware or UrlSecurityMiddleware(
+            redis_repo=self.redis_repo,
+        )
 
     async def read_record(self, short_code: str) -> dict[str, Any] | None:
         """
@@ -108,7 +113,8 @@ class URLQueryRepository:
         original_url: str,
         creator_id: str,
         ttl: int = 31536000,
-        max_attempts: int = 5
+        max_attempts: int = 5,
+        client_ip: str | None = None,
     ) -> dict[str, Any]:
         """
         Creates a short URL record.
@@ -116,6 +122,12 @@ class URLQueryRepository:
         If a collision occurs on shortCode (CosmosResourceExistsError), 
         re-hashes/encodes with Base62Encoder until unique or max_attempts reached.
         """
+        await self.security_middleware.validate_url(
+            original_url,
+            creator_id=creator_id,
+            client_ip=client_ip,
+        )
+
         container = await self.connection_manager.get_container()
         
         # Initial shortcode from shortener

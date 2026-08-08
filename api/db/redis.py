@@ -74,3 +74,14 @@ class RedisRepository:
             await client.delete(f"url:{short_code}")
         except redis.RedisError as e:
             logger.warning(f"Redis delete failed for {short_code}: {e}")
+
+    async def increment_counter(self, key: str, ttl: int) -> int:
+        try:
+            client = await self._get_redis()
+            value = await client.incr(key)
+            if value == 1:
+                await client.expire(key, ttl)
+            return value
+        except redis.RedisError as e:
+            logger.warning(f"Redis rate-limit counter failed for {key}: {e}")
+            raise
