@@ -59,6 +59,7 @@ async def test_read_record_cache_miss_cosmos_hit():
 @pytest.mark.asyncio
 async def test_create_record_duplicate_retry():
     mock_redis = AsyncMock()
+    mock_security = AsyncMock()
     mock_container = AsyncMock()
 
     # First attempt raises CosmosResourceExistsError (collision), second attempt succeeds
@@ -76,11 +77,20 @@ async def test_create_record_duplicate_retry():
     mock_conn = AsyncMock()
     mock_conn.get_container.return_value = mock_container
 
-    repo = URLQueryRepository(connection_manager=mock_conn, redis_repo=mock_redis)
+    repo = URLQueryRepository(
+        connection_manager=mock_conn,
+        redis_repo=mock_redis,
+        security_middleware=mock_security,
+    )
     res = await repo.create_record(original_url="https://example.com", creator_id="anon_123")
 
     assert mock_container.create_item.call_count == 2
     assert res == created_doc
+    mock_security.validate_url.assert_awaited_once_with(
+        "https://example.com",
+        creator_id="anon_123",
+        client_ip=None,
+    )
 
 
 @pytest.mark.asyncio
