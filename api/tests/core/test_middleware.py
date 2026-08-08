@@ -2,11 +2,18 @@ from unittest.mock import AsyncMock
 
 import pytest
 
+from core.config import settings
 from core.middleware import (
     BlockedUrlError,
+    GoogleSafeBrowsingChecker,
+    GoogleSafeBrowsingConfig,
     RateLimitExceededError,
     UrlSecurityMiddleware,
 )
+
+# ---------------------------------------------------------------------------
+# SSRF & Security Middleware Tests
+# ---------------------------------------------------------------------------
 
 
 @pytest.mark.asyncio
@@ -57,3 +64,49 @@ async def test_allows_safe_url():
 
     rate_limiter.increment.assert_any_await("rate-limit:url-create:ip:8.8.8.8", 300)
     rate_limiter.increment.assert_any_await("rate-limit:url-create:user:user-1", 300)
+
+
+# ---------------------------------------------------------------------------
+# Google Safe Browsing Integration Tests (5 Real Threat Cases)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_safe_browsing_allows_clean_url():
+    """Test 1: Clean/safe URLs return True."""
+    checker = GoogleSafeBrowsingChecker(GoogleSafeBrowsingConfig(api_key=settings.safe_browsing))
+    is_safe = await checker.is_safe("https://example.com")
+    assert is_safe is True
+
+
+@pytest.mark.asyncio
+async def test_safe_browsing_detects_malware_url():
+    """Test 2: Real Google Safe Browsing test URL for MALWARE returns False."""
+    checker = GoogleSafeBrowsingChecker(GoogleSafeBrowsingConfig(api_key=settings.safe_browsing))
+    is_safe = await checker.is_safe("http://testsafebrowsing.appspot.com/s/malware.html")
+    assert is_safe is False
+
+
+@pytest.mark.asyncio
+async def test_safe_browsing_detects_phishing_url():
+    """Test 3: Real Google Safe Browsing test URL for SOCIAL_ENGINEERING (phishing) returns False."""
+    checker = GoogleSafeBrowsingChecker(GoogleSafeBrowsingConfig(api_key=settings.safe_browsing))
+    is_safe = await checker.is_safe("http://testsafebrowsing.appspot.com/s/phishing.html")
+    assert is_safe is False
+
+
+@pytest.mark.asyncio
+async def test_safe_browsing_detects_unwanted_software_url():
+    """Test 4: Real Google Safe Browsing test URL for UNWANTED_SOFTWARE returns False."""
+    checker = GoogleSafeBrowsingChecker(GoogleSafeBrowsingConfig(api_key=settings.safe_browsing))
+    is_safe = await checker.is_safe("http://testsafebrowsing.appspot.com/s/unwanted.html")
+    assert is_safe is False
+
+
+@pytest.mark.asyncio
+async def test_safe_browsing_allows_when_api_key_missing():
+    """Test 5: Fallback behavior when API key is not configured."""
+    checker = GoogleSafeBrowsingChecker(GoogleSafeBrowsingConfig(api_key=""))
+    is_safe = await checker.is_safe("http://testsafebrowsing.appspot.com/s/malware.html")
+    assert is_safe is True
+

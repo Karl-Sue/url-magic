@@ -38,7 +38,7 @@ class UrlRateLimiter(Protocol):
 class UrlSecurityConfig:
     rate_limit_count: int = settings.url_create_rate_limit_count
     rate_limit_window_seconds: int = settings.url_create_rate_limit_window_seconds
-    safe_browsing_api_key: str = settings.safe_browsing_api_key
+    safe_browsing: str = settings.safe_browsing
     safe_browsing_client_id: str = settings.safe_browsing_client_id
     safe_browsing_client_version: str = settings.safe_browsing_client_version
 
@@ -130,13 +130,13 @@ class UrlSecurityMiddleware:
                 if rate_limit_window_seconds is not None
                 else base_config.rate_limit_window_seconds
             ),
-            safe_browsing_api_key=base_config.safe_browsing_api_key,
+            safe_browsing=base_config.safe_browsing,
             safe_browsing_client_id=base_config.safe_browsing_client_id,
             safe_browsing_client_version=base_config.safe_browsing_client_version,
         )
         self.reputation_checker = reputation_checker or GoogleSafeBrowsingChecker(
             GoogleSafeBrowsingConfig(
-                api_key=self.config.safe_browsing_api_key,
+                api_key=self.config.safe_browsing,
                 client_id=self.config.safe_browsing_client_id,
                 client_version=self.config.safe_browsing_client_version,
             )
