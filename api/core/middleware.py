@@ -161,6 +161,8 @@ class UrlSecurityMiddleware:
 
         if self.reputation_checker and not await self.reputation_checker.is_safe(url):
             raise BlockedUrlError("URL was flagged by the reputation service")
+
+
 def _validate_destination(url: str) -> None:
     parsed = urlparse(url)
     if parsed.scheme not in {"http", "https"}:

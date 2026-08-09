@@ -10,6 +10,12 @@ class Settings(BaseSettings):
     app_name: str = "URL Magic"
     version: str = "1.0.0"
 
+    # Security and Session settings
+    secret_key: str = "default-secret-key-change-in-production"
+    guest_cookie_name: str = "guest_session"
+    guest_flag_cookie_name: str = "has_guest_session"
+    guest_session_max_age_seconds: int = 30 * 24 * 60 * 60  # 30 days
+
     # URL safety and abuse-prevention settings
     url_create_rate_limit_count: int = 10
     url_create_rate_limit_window_seconds: int = 300

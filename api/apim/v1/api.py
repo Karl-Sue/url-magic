@@ -8,10 +8,8 @@ router = APIRouter(prefix="/api/v1", tags=["session"])
 
 @router.get("/session/guest", response_model=GuestSessionResponse)
 async def get_guest_session(response: Response):
-    """Issues a new guest session token and dual cookies.
-
-    Called by frontend when `has_guest_session` is missing.
-    """
+    """Issues a new guest session token and dual cookies."""
+    
     guest_id = create_guest_session(response)
 
     return GuestSessionResponse(
