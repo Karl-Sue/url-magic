@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from apim.v1.api import router as apim_router
+from apim.v1.api import api_router
 from core.config import settings
 from functions.creator import (
     sanitize_input,
@@ -10,7 +10,7 @@ from functions.creator import (
 )
 
 app = FastAPI()
-app.include_router(apim_router)
+app.include_router(api_router)
 client = TestClient(app)
 
 
