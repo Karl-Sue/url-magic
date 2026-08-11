@@ -1,15 +1,12 @@
-from fastapi import APIRouter, HTTPException, Request, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 
 from core.config import settings
+from core.deps import get_query_repository
 from core.middleware import (
     BlockedUrlError,
-    GoogleSafeBrowsingChecker,
-    GoogleSafeBrowsingConfig,
     RateLimitExceededError,
-    UrlSecurityMiddleware,
 )
 from db.cosmos_client import URLQueryRepository
-from db.redis import RedisRepository
 from functions.creator import verify_session_id
 from schemas.url import (
     QRCodeRequest,
@@ -20,27 +17,13 @@ from services.qr_generator import generate_qr_code
 
 router = APIRouter()
 
-# Initialize repositories and security middleware
-_redis_repo = RedisRepository()
-_reputation_checker = GoogleSafeBrowsingChecker(
-    config=GoogleSafeBrowsingConfig(
-        api_key=settings.safe_browsing,
-        client_id=settings.safe_browsing_client_id,
-        client_version=settings.safe_browsing_client_version,
-    )
-)
-_security_middleware = UrlSecurityMiddleware(
-    redis_repo=_redis_repo,
-    reputation_checker=_reputation_checker,
-)
-_query_repo = URLQueryRepository(
-    redis_repo=_redis_repo,
-    security_middleware=_security_middleware,
-)
-
 
 @router.post("/shorten", response_model=URLShortenResponse, status_code=status.HTTP_201_CREATED)
-async def shorten_url(payload: URLShortenRequest, request: Request):
+async def shorten_url(
+    payload: URLShortenRequest,
+    request: Request,
+    query_repo: URLQueryRepository = Depends(get_query_repository),
+):
     """Shortens a URL after checking security, SSRF, rate-limiting,
 
     and Google Safe Browsing reputation. Saves the record to Azure Cosmos DB.
@@ -56,7 +39,7 @@ async def shorten_url(payload: URLShortenRequest, request: Request):
         creator_id = f"anon_ip_{client_ip}"
 
     try:
-        doc = await _query_repo.create_record(
+        doc = await query_repo.create_record(
             original_url=target_url,
             creator_id=creator_id,
             ttl=payload.ttl,
