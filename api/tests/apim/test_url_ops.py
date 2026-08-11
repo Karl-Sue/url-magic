@@ -1,9 +1,10 @@
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock
 
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from apim.v1.api import api_router
+from core.deps import get_query_repository
 from core.middleware import BlockedUrlError, RateLimitExceededError
 
 app = FastAPI()
@@ -21,9 +22,11 @@ def test_shorten_url_success():
         "ttl": 31536000,
     }
 
-    with patch("apim.v1.routes.url_ops._query_repo.create_record", new_callable=AsyncMock) as mock_create:
-        mock_create.return_value = mock_doc
+    mock_repo = AsyncMock()
+    mock_repo.create_record.return_value = mock_doc
 
+    app.dependency_overrides[get_query_repository] = lambda: mock_repo
+    try:
         response = client.post(
             "/api/v1/shorten",
             json={"url": "https://example.com/test-url"},
@@ -34,12 +37,16 @@ def test_shorten_url_success():
         assert data["short_code"] == "aB3k9X"
         assert data["original_url"] == "https://example.com/test-url"
         assert "short_url" in data
+    finally:
+        app.dependency_overrides.clear()
 
 
 def test_shorten_url_ssrf_blocked():
-    with patch("apim.v1.routes.url_ops._query_repo.create_record", new_callable=AsyncMock) as mock_create:
-        mock_create.side_effect = BlockedUrlError("Private, loopback, and reserved IP ranges are not allowed")
+    mock_repo = AsyncMock()
+    mock_repo.create_record.side_effect = BlockedUrlError("Private, loopback, and reserved IP ranges are not allowed")
 
+    app.dependency_overrides[get_query_repository] = lambda: mock_repo
+    try:
         response = client.post(
             "/api/v1/shorten",
             json={"url": "http://127.0.0.1/internal"},
@@ -47,12 +54,16 @@ def test_shorten_url_ssrf_blocked():
 
         assert response.status_code == 400
         assert "URL security validation failed" in response.json()["detail"]
+    finally:
+        app.dependency_overrides.clear()
 
 
 def test_shorten_url_rate_limit_exceeded():
-    with patch("apim.v1.routes.url_ops._query_repo.create_record", new_callable=AsyncMock) as mock_create:
-        mock_create.side_effect = RateLimitExceededError("Rate limit exceeded")
+    mock_repo = AsyncMock()
+    mock_repo.create_record.side_effect = RateLimitExceededError("Rate limit exceeded")
 
+    app.dependency_overrides[get_query_repository] = lambda: mock_repo
+    try:
         response = client.post(
             "/api/v1/shorten",
             json={"url": "https://example.com"},
@@ -60,6 +71,8 @@ def test_shorten_url_rate_limit_exceeded():
 
         assert response.status_code == 429
         assert "Rate limit exceeded" in response.json()["detail"]
+    finally:
+        app.dependency_overrides.clear()
 
 
 def test_generate_qr_code_endpoint():
