@@ -1,5 +1,4 @@
 import logging
-from typing import Tuple
 
 from db.cosmos_client import URLQueryRepository
 
@@ -9,7 +8,7 @@ logger = logging.getLogger(__name__)
 async def get_redirect_url(
     short_code: str,
     query_repo: URLQueryRepository,
-) -> Tuple[str | None, int]:
+) -> tuple[str | None, int]:
     """Fast redirect lookup using Redis cache-first and Cosmos DB point-read fallback.
 
     Args:
@@ -28,6 +27,6 @@ async def get_redirect_url(
             return record["originalUrl"], 301
 
         return None, 404
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001
         logger.error(f"Redirect resolution failed for short_code '{short_code}': {exc}")
         return None, 500

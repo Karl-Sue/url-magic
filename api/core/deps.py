@@ -1,5 +1,3 @@
-from typing import AsyncGenerator
-
 from core.config import settings
 from core.middleware import (
     GoogleSafeBrowsingChecker,
