@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Response
 
-from apim.v1.routes import redirect, url_ops
+from apim.v1.routes import health, redirect, url_ops
 from functions.creator import create_guest_session
 from schemas.session import GuestSessionResponse
 
@@ -29,3 +29,4 @@ async def get_guest_session(response: Response):
 # Register sub-routers from routes/
 api_router.include_router(url_ops.router, tags=["URL Operations"])
 api_router.include_router(redirect.router, tags=["Redirect"])
+api_router.include_router(health.router, tags=["Health Check"])
