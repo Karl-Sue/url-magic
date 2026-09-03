@@ -8,6 +8,7 @@ from azure.cosmos.exceptions import (
     CosmosResourceNotFoundError,
 )
 
+from core.config import settings
 from core.middleware import UrlSecurityMiddleware
 from db.redis import RedisRepository
 from services.url_shortener import Base62Encoder, URLShortener
@@ -25,13 +26,19 @@ class CosmosConnectionManager:
     """
     _instance: Optional["CosmosConnectionManager"] = None
 
-    def __new__(cls, endpoint: str = "", key: str = "", database_name: str = "UrlMagicDb", container_name: str = "Urls"):
+    def __new__(
+        cls,
+        endpoint: str | None = None,
+        key: str | None = None,
+        database_name: str | None = None,
+        container_name: str | None = None,
+    ):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
-            cls._instance.endpoint = endpoint
-            cls._instance.key = key
-            cls._instance.database_name = database_name
-            cls._instance.container_name = container_name
+            cls._instance.endpoint = endpoint or settings.cosmos_endpoint
+            cls._instance.key = key or settings.cosmos_key
+            cls._instance.database_name = database_name or settings.cosmos_database
+            cls._instance.container_name = container_name or settings.cosmos_container
             cls._instance._client: AsyncCosmosClient | None = None
             cls._instance._container = None
         return cls._instance
@@ -42,16 +49,21 @@ class CosmosConnectionManager:
         """
         if self._container is None:
             if not self._client:
-                # Use Gateway connection mode (HTTP/HTTPS REST calls) for serverless environments (Azure Functions)
-                from azure.cosmos import ConnectionMode
+                # Disable SSL verification and endpoint discovery when targeting local Cosmos DB emulator
+                connection_verify = not ("localhost" in self.endpoint or "127.0.0.1" in self.endpoint)
                 self._client = AsyncCosmosClient(
                     self.endpoint,
                     credential=self.key,
-                    connection_mode=ConnectionMode.Gateway
+                    connection_verify=connection_verify,
+                    enable_endpoint_discovery=False,
                 )
             
-            db = self._client.get_database_client(self.database_name)
-            self._container = db.get_container_client(self.container_name)
+            db = await self._client.create_database_if_not_exists(id=self.database_name)
+            from azure.cosmos import PartitionKey
+            self._container = await db.create_container_if_not_exists(
+                id=self.container_name,
+                partition_key=PartitionKey(path="/shortCode"),
+            )
         return self._container
 
     async def close(self):

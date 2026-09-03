@@ -23,6 +23,12 @@ class Settings(BaseSettings):
     safe_browsing_client_id: str = "url-magic"
     safe_browsing_client_version: str = "1.0.0"
 
+    # Azure Cosmos DB settings
+    cosmos_endpoint: str = "https://localhost:8081"
+    cosmos_key: str
+    cosmos_database: str
+    cosmos_container: str
+
     model_config = SettingsConfigDict(
         env_file=str(ENV_FILE),
         env_file_encoding="utf-8",
