@@ -1,0 +1,13 @@
+# Example variable values for Development Environment
+location                = "eastus"
+environment             = "dev"
+cosmos_account_name     = "cosmos-urlmagic-dev-unique"
+cosmos_database_name    = "urlsdb"
+cosmos_container_name   = "UrlMagic"
+partition_key_path      = "/shortCode"
+enable_cosmos_free_tier = true
+function_app_name       = "func-urlmagic-dev-unique"
+storage_account_name    = "sturlmagicdevunq"
+safe_browsing_key       = "YOUR_SAFE_BROWSING_API_KEY_HERE"
+python_version          = "3.11"
+
