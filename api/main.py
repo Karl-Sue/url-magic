@@ -1,6 +1,11 @@
-def main():
-    print("Hello from api!")
+from fastapi import FastAPI
 
+from apim.v1.api import api_router
 
-if __name__ == "__main__":
-    main()
+app = FastAPI(
+    title="URL Magic API",
+    description="URL Shortener & Magic Link Service",
+    version="1.0.0",
+)
+
+app.include_router(api_router)
