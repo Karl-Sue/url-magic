@@ -84,3 +84,36 @@ def test_generate_qr_code_endpoint():
     assert response.status_code == 200
     assert response.headers["content-type"] == "image/png"
     assert len(response.content) > 0
+
+def test_shorten_url_x_forwarded_for_header():
+    mock_doc = {
+        "id": "aB3k9X",
+        "shortCode": "aB3k9X",
+        "originalUrl": "https://example.com/test-url",
+        "creatorId": "anon_ip_203.0.113.195",
+        "createdAt": "2026-08-10T12:00:00Z",
+        "ttl": 31536000,
+    }
+
+    mock_repo = AsyncMock()
+    mock_repo.create_record.return_value = mock_doc
+
+    app.dependency_overrides[get_query_repository] = lambda: mock_repo
+    try:
+        response = client.post(
+            "/api/v1/shorten",
+            json={"url": "https://example.com/test-url"},
+            headers={"X-Forwarded-For": "203.0.113.195, 70.41.3.18"},
+        )
+
+        assert response.status_code == 201
+        # Verify creator_id passed to repo uses first IP from X-Forwarded-For header
+        mock_repo.create_record.assert_called_once_with(
+            original_url="https://example.com/test-url",
+            creator_id="anon_ip_203.0.113.195",
+            ttl=31536000,
+            client_ip="203.0.113.195",
+        )
+    finally:
+        app.dependency_overrides.clear()
+
