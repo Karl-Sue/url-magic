@@ -1,0 +1,13 @@
+# Example variable values for Production Environment
+location                = "eastus"
+environment             = "prod"
+cosmos_account_name     = "cosmos-urlmagic-prod-unique"
+cosmos_database_name    = "urlsdb"
+cosmos_container_name   = "UrlMagic"
+partition_key_path      = "/shortCode"
+enable_cosmos_free_tier = false # Set true only if free tier is not allocated in another environment
+function_app_name       = "func-urlmagic-prod-unique"
+storage_account_name    = "sturlmagicprodunq"
+safe_browsing_key       = "YOUR_PROD_SAFE_BROWSING_API_KEY_HERE"
+python_version          = "3.11"
+
