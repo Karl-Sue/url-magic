@@ -33,7 +33,12 @@ async def shorten_url(
     # Extract guest_id from cookie or fallback to client IP
     cookie_token = request.cookies.get(settings.guest_cookie_name)
     creator_id = verify_session_id(cookie_token) if cookie_token else None
-    client_ip = request.client.host if request.client else "127.0.0.1"
+    # Check X-Forwarded-For header if behind APIM / reverse proxy, fallback to request.client.host
+    forwarded_for = request.headers.get("x-forwarded-for")
+    if forwarded_for:
+        client_ip = forwarded_for.split(",")[0].strip()
+    else:
+        client_ip = request.client.host if request.client else "127.0.0.1"
 
     if not creator_id:
         creator_id = f"anon_ip_{client_ip}"
@@ -63,7 +68,7 @@ async def shorten_url(
 
     base_url = str(request.base_url).rstrip("/")
     short_code = doc["shortCode"]
-    short_url = f"{base_url}/{short_code}"
+    short_url = f"{base_url}/api/v1/{short_code}"
 
     return URLShortenResponse(
         short_code=short_code,
