@@ -219,3 +219,18 @@ __marimo__/
 
 api/local.settings.json
 .*/*
+
+# Terraform
+*.tfvars
+*.tfvars.json
+!*.tfvars.example
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraform/
+.terraform.lock.hcl
