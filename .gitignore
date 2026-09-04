@@ -218,7 +218,7 @@ __marimo__/
 .streamlit/secrets.toml
 
 api/local.settings.json
-.*/*
+.agents/*
 
 # Terraform
 *.tfvars
@@ -233,4 +233,4 @@ override.tf.json
 *_override.tf
 *_override.tf.json
 .terraform/
-.terraform.lock.hcl
+.terraform.lock.hcl

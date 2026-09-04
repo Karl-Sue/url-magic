@@ -1,0 +1,79 @@
+name: PR Validation
+
+'on':
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-validation-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python-tests:
+    name: Python tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: api/uv.lock
+
+      - name: Install dependencies
+        run: uv sync --dev
+
+      - name: Run tests
+        run: uv run pytest
+
+  terraform-validation:
+    name: Terraform validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Detect infrastructure changes
+        id: changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            infrastructure:
+              - 'infra/**'
+
+      - name: Set up Terraform
+        if: steps.changes.outputs.infrastructure == 'true'
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: '1.5.0'
+
+      - name: Check Terraform formatting
+        if: steps.changes.outputs.infrastructure == 'true'
+        run: terraform fmt -check -recursive infra
+
+      - name: Validate Terraform environments
+        if: steps.changes.outputs.infrastructure == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          for environment in dev prod; do
+            terraform -chdir="infra/environements/$environment" init -backend=false -input=false
+            terraform -chdir="infra/environements/$environment" validate
+          done
