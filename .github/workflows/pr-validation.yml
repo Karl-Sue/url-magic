@@ -19,6 +19,8 @@ jobs:
   python-tests:
     name: Python tests
     runs-on: ubuntu-latest
+    env:
+      SAFE_BROWSING: ${{ secrets.SAFE_BROWSING }}
     defaults:
       run:
         working-directory: api
@@ -42,6 +44,9 @@ jobs:
 
       - name: Run tests
         run: uv run pytest
+
+      - name: Check Python code
+        run: uv run ruff check .
 
   terraform-validation:
     name: Terraform validation
