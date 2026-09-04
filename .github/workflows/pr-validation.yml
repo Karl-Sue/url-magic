@@ -21,6 +21,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SAFE_BROWSING: ${{ secrets.SAFE_BROWSING }}
+      COSMOS_CONTAINER: ${{ secrets.COSMOS_CONTAINER }}
+      COSMOS_DATABASE: ${{ secrets.COSMOS_DATABASE }}
+      COSMOS_KEY: ${{ secrets.COSMOS_KEY }}
     defaults:
       run:
         working-directory: api
