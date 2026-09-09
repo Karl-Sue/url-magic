@@ -1,69 +1,103 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
+import { useState } from "react";
+import { QRTab } from "@/components";
+
+type Tab = "shorten" | "qr" | "dashboard";
+
+const TABS: { id: Tab; label: string; description: string }[] = [
+  { id: "shorten",   label: "Shorten",   description: "Generate short links" },
+  { id: "qr",        label: "QR Code",   description: "Create QR images"     },
+  { id: "dashboard", label: "Dashboard", description: "Monitor URL health"   },
+];
+
+const TAB_TITLES: Record<Tab, { heading: string; sub: string }> = {
+  shorten:   { heading: "URL Shortener",  sub: "Paste a long URL and get a short one."          },
+  qr:        { heading: "QR Generator",   sub: "Create a scannable QR code for any URL."        },
+  dashboard: { heading: "Health Monitor", sub: "Track latency and uptime for this session."      },
+};
+
+export default function HomePage() {
+  const [tab, setTab] = useState<Tab>("shorten");
+  const { heading, sub } = TAB_TITLES[tab];
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
+    <div style={{ display: "flex", minHeight: "100%", background: "#ffffff" }}>
+
+      {/* ── Sidebar ── */}
+      <aside style={{
+        width: "312px",
+        flexShrink: 0,
+        borderRight: "1px solid #e8e8e8",
+        display: "flex",
+        flexDirection: "column",
+        position: "sticky",
+        top: 0,
+        height: "100vh",
+        overflowY: "auto",
+      }}>
+        {/* Wordmark */}
+        <div className="page-top wordmark">
+          <h1 className="heading">
+            Url Magic
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+          <span className="tagline">
+            less url, more life
+          </span>
+        </div>
+
+        {/* Nav */}
+        <nav style={{ padding: "24px 19px", flex: 1 }}>
+          {TABS.map((t) => (
+            <button
+              type="button"
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              style={{
+                display: "block",
+                width: "100%",
+                textAlign: "left",
+                padding: "14px 17px",
+                background: tab === t.id ? "#f5f5f5" : "transparent",
+                border: "none",
+                borderLeft: tab === t.id ? "2px solid #111111" : "2px solid transparent",
+                cursor: "pointer",
+                transition: "all 100ms",
+                marginBottom: "5px",
+              }}
+              onMouseEnter={(e) => { if (tab !== t.id) e.currentTarget.style.background = "#fafafa"; }}
+              onMouseLeave={(e) => { if (tab !== t.id) e.currentTarget.style.background = "transparent"; }}
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+              <span style={{ display: "block", fontSize: "18px", fontFamily: "DM Sans, sans-serif", fontWeight: tab === t.id ? 500 : 400, color: tab === t.id ? "#111111" : "#555555" }}>
+                {t.label}
+              </span>
+              <span style={{ display: "block", fontSize: "14px", fontFamily: "DM Sans, sans-serif", color: "#b8b8b8", marginTop: "2px" }}>
+                {t.description}
+              </span>
+            </button>
+          ))}
+        </nav>
+      </aside>
+
+      {/* ── Main ── */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
+        {/* Page header */}
+        <div className="page-top page-header">
+          <h1 className="heading">
+            {heading}
+          </h1>
+          <p className="tagline">
+            {sub}
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+
+        {/* Content */}
+        <main style={{ padding: "62px 67px 115px" }}>
+          {/*tab === "shorten"   && <ShortenerTab />*/}
+          {tab === "qr" && <QRTab />}
+          {/*tab === "dashboard" && <DashboardTab />*/}
+        </main>
+      </div>
     </div>
   );
 }
