@@ -77,7 +77,7 @@ def issue_guest_cookies(response: Response, session_id: str) -> str:
         value=token,
         max_age=settings.guest_session_max_age_seconds,
         httponly=True,
-        secure=True,
+        secure=settings.cookie_secure,
         samesite="lax",
         path="/",
     )
@@ -88,7 +88,7 @@ def issue_guest_cookies(response: Response, session_id: str) -> str:
         value="true",
         max_age=settings.guest_session_max_age_seconds,
         httponly=False,
-        secure=True,
+        secure=settings.cookie_secure,
         samesite="lax",
         path="/",
     )

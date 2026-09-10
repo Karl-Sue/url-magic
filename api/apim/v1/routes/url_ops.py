@@ -7,7 +7,7 @@ from core.middleware import (
     RateLimitExceededError,
 )
 from db.cosmos_client import URLQueryRepository
-from functions.creator import verify_session_id
+from functions.creator import issue_guest_cookies, verify_session_id
 from schemas.url import (
     QRCodeRequest,
     URLShortenRequest,
@@ -22,6 +22,7 @@ router = APIRouter()
 async def shorten_url(
     payload: URLShortenRequest,
     request: Request,
+    response: Response,
     query_repo: URLQueryRepository = Depends(get_query_repository),
 ):
     """Shortens a URL after checking security, SSRF, rate-limiting,
@@ -33,6 +34,7 @@ async def shorten_url(
     # Extract guest_id from cookie or fallback to client IP
     cookie_token = request.cookies.get(settings.guest_cookie_name)
     creator_id = verify_session_id(cookie_token) if cookie_token else None
+    
     # Check X-Forwarded-For header if behind APIM / reverse proxy, fallback to request.client.host
     forwarded_for = request.headers.get("x-forwarded-for")
     if forwarded_for:
@@ -67,6 +69,8 @@ async def shorten_url(
         ) from exc
 
     base_url = str(request.base_url).rstrip("/")
+    if cookie_token and verify_session_id(cookie_token):
+        issue_guest_cookies(response, creator_id)
     short_code = doc["shortCode"]
     short_url = f"{base_url}/api/v1/{short_code}"
 

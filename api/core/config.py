@@ -14,7 +14,8 @@ class Settings(BaseSettings):
     secret_key: str = "default-secret-key-change-in-production"
     guest_cookie_name: str = "guest_session"
     guest_flag_cookie_name: str = "has_guest_session"
-    guest_session_max_age_seconds: int = 30 * 24 * 60 * 60  # 30 days
+    guest_session_max_age_seconds: int = 365 * 24 * 60 * 60  # 1 year
+    cookie_secure: bool = False
 
     # URL safety and abuse-prevention settings
     url_create_rate_limit_count: int = 10
