@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { ShortLink } from "@/types/response";
+import { API_BASE_URL, SHORT_LINKS_STORAGE_KEY } from "@/libs/constants";
 
 interface ShortenUrlResponse {
   short_code: string;
@@ -8,11 +9,6 @@ interface ShortenUrlResponse {
   created_at: string;
   ttl: number;
 }
-
-const API_BASE_URL = (
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1"
-).replace(/\/$/, "");
-const SHORT_LINKS_STORAGE_KEY = "url-magic:short-links";
 
 interface StoredShortLink {
   link: ShortLink;
