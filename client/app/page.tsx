@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { QRTab, ShortenerTab, DashboardTab } from "@/components";
+import { useClient } from "@/hooks/useClient";
 
 type Tab = "shorten" | "qr" | "dashboard";
 
@@ -18,8 +19,12 @@ const TAB_TITLES: Record<Tab, { heading: string; sub: string }> = {
 };
 
 export default function HomePage() {
+  const { ready, error } = useClient();
   const [tab, setTab] = useState<Tab>("shorten");
   const { heading, sub } = TAB_TITLES[tab];
+
+  if (error) throw error;
+  if (!ready) return null;
 
   return (
     <div style={{ display: "flex", minHeight: "100%", background: "#ffffff" }}>

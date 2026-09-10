@@ -8,6 +8,7 @@ export function useHealthCheck() {
       const response = await fetch(`${API_BASE_URL}/health`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ urls }),
       });
 

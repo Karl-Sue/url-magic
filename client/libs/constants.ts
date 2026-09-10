@@ -3,6 +3,7 @@ import type { MonitorStatus } from "@/types/response";
 export const API_BASE_URL = (
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1"
 ).replace(/\/$/, "");
+export const GUEST_FLAG_COOKIE = "has_guest_session";
 
 export const SHORT_LINKS_STORAGE_KEY = "url-magic:short-links";
 export const MONITORED_URLS_STORAGE_KEY = "url-magic:monitored-urls";

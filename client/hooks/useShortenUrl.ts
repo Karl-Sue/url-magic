@@ -68,6 +68,7 @@ export function useShortenUrl() {
     const response = await fetch(`${API_BASE_URL}/shorten`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ url }),
     });
 
