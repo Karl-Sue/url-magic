@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react";
-import { QRTab, ShortenerTab } from "@/components";
+import { QRTab, ShortenerTab, DashboardTab } from "@/components";
 
 type Tab = "shorten" | "qr" | "dashboard";
 
@@ -87,7 +87,7 @@ export default function HomePage() {
         <main style={{ padding: "62px 67px 115px" }}>
           {tab === "shorten"   && <ShortenerTab />}
           {tab === "qr" && <QRTab />}
-          {/*tab === "dashboard" && <DashboardTab />*/}
+          {tab === "dashboard" && <DashboardTab />}
         </main>
       </div>
     </div>

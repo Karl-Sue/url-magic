@@ -6,7 +6,7 @@ export interface ShortLink {
     ttl: number;
 }
 
-interface URLHealthStatus {
+export interface URLHealthStatus {
     url: string;
     status: string;
     statusCode: number | null;
@@ -14,6 +14,23 @@ interface URLHealthStatus {
     error: string | null;
 }
 
-export interface MonitoredUrl {
+export interface HealthCheckResponse {
     results: URLHealthStatus[];
+}
+
+export type MonitorStatus = "online" | "offline" | "checking" | "pending";
+
+export interface MonitorHistoryEntry {
+    latency: number | null;
+    ok: boolean;
+}
+
+export interface MonitoredUrl {
+    id: string;
+    url: string;
+    status: MonitorStatus;
+    latency: number | null;
+    lastChecked: Date | null;
+    history: MonitorHistoryEntry[];
+    error?: string | null;
 }

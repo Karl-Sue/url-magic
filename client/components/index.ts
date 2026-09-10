@@ -3,3 +3,4 @@ export { Button } from "./Button";
 export { CopyButton } from "./CopyButton";
 export { QRTab } from "./QRTab"
 export { ShortenerTab } from "./ShorternerTab";
+export { DashboardTab } from "./DashboardTab";
