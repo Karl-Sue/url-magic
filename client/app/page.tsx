@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react";
-import { QRTab } from "@/components";
+import { QRTab, ShortenerTab } from "@/components";
 
 type Tab = "shorten" | "qr" | "dashboard";
 
@@ -38,12 +38,8 @@ export default function HomePage() {
       }}>
         {/* Wordmark */}
         <div className="page-top wordmark">
-          <h1 className="heading">
-            Url Magic
-          </h1>
-          <span className="tagline">
-            less url, more life
-          </span>
+          <h1 className="heading"> Url Magic </h1>
+          <span className="tagline"> less url, more life </span>
         </div>
 
         {/* Nav */}
@@ -83,17 +79,13 @@ export default function HomePage() {
       <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
         {/* Page header */}
         <div className="page-top page-header">
-          <h1 className="heading">
-            {heading}
-          </h1>
-          <p className="tagline">
-            {sub}
-          </p>
+          <h1 className="heading"> {heading} </h1>
+          <p className="tagline"> {sub} </p>
         </div>
 
         {/* Content */}
         <main style={{ padding: "62px 67px 115px" }}>
-          {/*tab === "shorten"   && <ShortenerTab />*/}
+          {tab === "shorten"   && <ShortenerTab />}
           {tab === "qr" && <QRTab />}
           {/*tab === "dashboard" && <DashboardTab />*/}
         </main>
