@@ -183,3 +183,28 @@ input::placeholder {
   display: block;
   margin-top: 6px;
 }
+
+.error-page .heading {
+  font-size: 32px;
+}
+
+.error-page .tagline {
+  font-size: 16px;
+}
+
+.error-page .text {
+  max-width: 560px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.error-page .button {
+  padding: 16px 32px;
+  font-size: 15px;
+}
+
+@media (max-width: 640px) {
+  .error-page .heading {
+    font-size: 28px;
+  }
+}
