@@ -46,7 +46,9 @@ export function useClient(): ClientState {
 				if (active) {
 					setState({
 						ready: false,
-						error: error instanceof Error ? error : new Error("Unable to reach the server."),
+						error: new Error(
+							"The page slipped away while our climber tested the limits of this zero. Grab a coffee and give him a moment to wiggle out.",
+						),
 					});
 				}
 			}
