@@ -66,9 +66,20 @@ async def check_urls_health(
     safe_browsing_checker: GoogleSafeBrowsingChecker,
 ) -> list[URLHealthStatus]:
     """Checks safety, status, and latency concurrently for a bulk list of URLs."""
+    #TO DO: Temporary solution before setting up the Queue architecture
+    semaphore = asyncio.Semaphore(20)
+
+    async def limited_check(url: HttpUrl) -> URLHealthStatus:
+        async with semaphore:
+            return await check_single_url_health(
+                url,
+                safe_browsing_checker,
+                client,
+            )
+
     async with httpx2.AsyncClient(headers={"User-Agent": "URL-Magic-HealthCheck/1.0"}) as client:
         tasks = [
-            check_single_url_health(url, safe_browsing_checker, client)
+            limited_check(url)
             for url in urls
         ]
         return await asyncio.gather(*tasks)

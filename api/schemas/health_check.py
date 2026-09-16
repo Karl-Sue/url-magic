@@ -1,9 +1,9 @@
 
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel, Field, HttpUrl
 
 
 class HealthCheckRequest(BaseModel):
-    urls: list[HttpUrl]
+    urls: list[HttpUrl] = Field(..., min_length=1, max_length=100)
 
 class URLHealthStatus(BaseModel):
     url: HttpUrl
