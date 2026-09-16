@@ -1,11 +1,18 @@
 "use client"
 
-import { useState, useCallback } from "react";
+import dynamic from "next/dynamic";
+import Image from "next/image";
+import { useState, useCallback, useEffect } from "react";
 import { MonitoredUrl } from "@/types/response";
 import { Input, Button } from "@/components"
 import { useHealthCheck } from "@/hooks/useHealthCheck";
 import { SPARKBAR_SLOTS, STATUS_LABELS } from "@/libs/constants";
 import { useMonitoredUrls } from "@/hooks/useMonitoredUrls";
+
+const DotLottieReact = dynamic(
+  () => import("@lottiefiles/dotlottie-react").then((mod) => mod.DotLottieReact),
+  { ssr: false },
+);
 
 {/* History URL check spark bar*/}
 function Sparkbar({ history }: { history: MonitoredUrl["history"] }) {
@@ -50,6 +57,9 @@ function formatMs(value: number | null) {
 
 export function DashboardTab() {
   const [input, setInput] = useState("");
+  const [isChecking, setIsChecking] = useState(false);
+  const [isTakingLonger, setIsTakingLonger] = useState(false);
+  const [limitError, setLimitError] = useState<string | null>(null);
   const { urls, addUrl: addMonitoredUrl, removeUrl, updateUrls } = useMonitoredUrls();
   const { checkUrlsHealth } = useHealthCheck();
 
@@ -81,6 +91,17 @@ export function DashboardTab() {
   }
 
   const checkAll = useCallback(async () => {
+    if (urls.length > 100) {
+      setLimitError("You can track a maximum of 100 URLs at once. Remove some URLs before checking again.");
+      return;
+    }
+
+    if (!urls.length) return;
+
+    const startedAt = Date.now();
+    setIsChecking(true);
+    setIsTakingLonger(false);
+    setLimitError(null);
     updateUrls((current) => current.map((u) => ({ ...u, status: "checking" })));
 
     try {
@@ -107,8 +128,21 @@ export function DashboardTab() {
         lastChecked: new Date(),
         error: error instanceof Error ? error.message : "Health check failed",
       })));
+    } finally {
+      const remainingTime = Math.max(0, 350 - (Date.now() - startedAt));
+      window.setTimeout(() => {
+        setIsChecking(false);
+        setIsTakingLonger(false);
+      }, remainingTime);
     }
   }, [checkUrlsHealth, updateUrls, urls]);
+
+  useEffect(() => {
+    if (!isChecking) return;
+
+    const timer = window.setTimeout(() => setIsTakingLonger(true), 2000);
+    return () => window.clearTimeout(timer);
+  }, [isChecking]);
 
   const addUrl = () => {
     const trimmed = input.trim();
@@ -147,8 +181,30 @@ export function DashboardTab() {
           <Input value={input} onChange={setInput} onKeyDown={(e) => e.key === "Enter" && addUrl()} placeholder="https://url-to-monitor.com" />
         </div>
         <Button onClick={addUrl} variant="ghost">Add</Button>
-        <Button onClick={checkAll}>Check All</Button>
+        <Button onClick={checkAll} disabled={isChecking || urls.length === 0}>Check All</Button>
       </div>
+
+      {limitError && (
+        <p style={{ marginTop: "-24px", marginBottom: "32px", color: "#cc0000", fontFamily: "DM Sans, sans-serif", fontSize: "14px" }}>
+          {limitError}
+        </p>
+      )}
+
+      {isChecking && (
+        <div role="status" aria-live="polite" style={{ display: "flex", alignItems: "center", gap: "18px", marginBottom: "32px", padding: "18px 0", borderTop: "1px solid #eeeeee", borderBottom: "1px solid #eeeeee" }}>
+          <div style={{ width: "64px", height: "64px", flexShrink: 0 }}>
+            <DotLottieReact src="/animations/loading.lottie" loop autoplay />
+          </div>
+          <div>
+            <p style={{ fontFamily: "DM Sans, sans-serif", fontSize: "15px", color: "#111111" }}>
+              {isTakingLonger ? "Still checking your URLs..." : "Checking your URLs..."}
+            </p>
+            <p style={{ fontFamily: "DM Sans, sans-serif", fontSize: "13px", color: "#999999", marginTop: "4px" }}>
+              {urls.length} URL{urls.length === 1 ? "" : "s"} in this check
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Table */}
       <div>
@@ -218,7 +274,7 @@ export function DashboardTab() {
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#111111")}
                 onMouseLeave={(e) => (e.currentTarget.style.color = "#c8c8c8")}
               >
-                <img src="/refresh.svg" alt="" width="15" height="15" />
+                <Image src="/refresh.svg" alt="" width={15} height={15} />
               </button>
               <button
                 onClick={() => removeUrl(u.id)}
@@ -227,7 +283,7 @@ export function DashboardTab() {
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#cc0000")}
                 onMouseLeave={(e) => (e.currentTarget.style.color = "#c8c8c8")}
               >
-                <img src="/close.svg" alt="" width="15" height="15" />
+                <Image src="/close.svg" alt="" width={15} height={15} />
               </button>
             </div>
           </div>
