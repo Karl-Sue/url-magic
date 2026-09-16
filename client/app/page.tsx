@@ -90,9 +90,15 @@ export default function HomePage() {
 
         {/* Content */}
         <main style={{ padding: "62px 67px 115px" }}>
-          {tab === "shorten"   && <ShortenerTab />}
-          {tab === "qr" && <QRTab />}
-          {tab === "dashboard" && <DashboardTab />}
+          <section hidden={tab !== "shorten"}>
+            <ShortenerTab />
+          </section>
+          <section hidden={tab !== "qr"}>
+            <QRTab />
+          </section>
+          <section hidden={tab !== "dashboard"}>
+            <DashboardTab />
+          </section>
         </main>
       </div>
     </div>
