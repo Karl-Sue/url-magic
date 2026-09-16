@@ -42,7 +42,7 @@ export function useClient(): ClientState {
 				}
 
 				if (active) setState({ ready: true, error: null });
-			} catch (error) {
+			} catch {
 				if (active) {
 					setState({
 						ready: false,

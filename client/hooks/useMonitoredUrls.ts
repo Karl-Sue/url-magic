@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { MonitoredUrl } from "@/types/response";
 import { MONITORED_URLS_STORAGE_KEY } from "@/libs/constants";
 
@@ -13,7 +13,17 @@ function loadStoredUrls(): MonitoredUrl[] {
     if (!stored) return [];
 
     const urls = JSON.parse(stored) as StoredMonitoredUrl[];
-    return urls.map((url) => ({ ...url, history: [] }));
+    return urls.map((url) => {
+      const lastChecked = url.lastChecked ? new Date(url.lastChecked) : null;
+
+      return {
+        ...url,
+        lastChecked: lastChecked && !Number.isNaN(lastChecked.getTime())
+          ? lastChecked
+          : null,
+        history: [],
+      };
+    });
   } catch {
     window.localStorage.removeItem(MONITORED_URLS_STORAGE_KEY);
     return [];
@@ -21,20 +31,18 @@ function loadStoredUrls(): MonitoredUrl[] {
 }
 
 function toStoredUrls(urls: MonitoredUrl[]): StoredMonitoredUrl[] {
-  return urls.map(({ history: _history, ...url }) => url);
+  return urls.map(
+    (url) => Object.fromEntries(
+      Object.entries(url).filter(([key]) => key !== "history"),
+    ) as StoredMonitoredUrl,
+  );
 }
 
 export function useMonitoredUrls() {
-  const [urls, setUrls] = useState<MonitoredUrl[]>([]);
-  const hasLoadedStorage = useRef(false);
+  const [urls, setUrls] = useState<MonitoredUrl[]>(loadStoredUrls);
 
   useEffect(() => {
-    setUrls(loadStoredUrls());
-    hasLoadedStorage.current = true;
-  }, []);
-
-  useEffect(() => {
-    if (!hasLoadedStorage.current || typeof window === "undefined") return;
+    if (typeof window === "undefined") return;
 
     window.localStorage.setItem(
       MONITORED_URLS_STORAGE_KEY,

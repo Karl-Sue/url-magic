@@ -16,7 +16,7 @@ interface StoredShortLink {
 }
 
 {/* Local Storage processing list of created links shortened */}
-function getStoredLinks(): ShortLink[] {
+export function getStoredLinks(): ShortLink[] {
   if (typeof window === "undefined") return [];
 
   const stored = window.localStorage.getItem(SHORT_LINKS_STORAGE_KEY);

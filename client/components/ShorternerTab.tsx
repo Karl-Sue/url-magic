@@ -1,19 +1,15 @@
 "use client"
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Input, Button, CopyButton } from "@/components";
-import { useShortenUrl } from "@/hooks/useShortenUrl";
+import { getStoredLinks, useShortenUrl } from "@/hooks/useShortenUrl";
 import { ShortLink } from "@/types/response";
 
 export function ShortenerTab() {
   const [input, setInput] = useState("");
   const [error, setError] = useState("");
-  const [links, setLinks] = useState<ShortLink[]>([]);
-  const { shortenUrl, loadStoredLinks } = useShortenUrl();
-
-  useEffect(() => {
-    setLinks(loadStoredLinks());
-  }, [loadStoredLinks]);
+  const [links, setLinks] = useState<ShortLink[]>(getStoredLinks);
+  const { shortenUrl } = useShortenUrl();
 
   const shorten = async () => {
     const trimmed = input.trim();

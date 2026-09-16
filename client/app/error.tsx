@@ -1,6 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 // Dynamically import DotLottieReact with SSR disabled
 const DotLottieReact = dynamic(
@@ -13,7 +15,8 @@ interface ErrorProps {
   reset: () => void;
 }
 
-export default function ErrorPage({ error }: ErrorProps) {
+export default function ErrorPage({ error, reset }: ErrorProps) {
+  const router = useRouter();
 
   return (
     <main className="error-page min-h-screen flex items-center justify-center p-6">
@@ -31,7 +34,7 @@ export default function ErrorPage({ error }: ErrorProps) {
 
         {/* Main Heading & Copy */}
         <h1 className="heading mb-2">
-          I thought I'd fit ...
+          I thought I&apos;d fit ...
         </h1>
         <p className="text mb-8">
           {error.message || "Something went wrong while connecting to Url Magic."}
@@ -39,12 +42,18 @@ export default function ErrorPage({ error }: ErrorProps) {
 
         {/* Action Controls */}
         <div className="w-full flex justify-center">
-          <a
+          <Link
             href="/"
             className="button button--primary w-full sm:w-auto"
+            onClick={(event) => {
+              event.preventDefault();
+              reset();
+              router.replace("/");
+              router.refresh();
+            }}
           >
             Back to Home
-          </a>
+          </Link>
         </div>
 
         {/* Incident Digest */}
