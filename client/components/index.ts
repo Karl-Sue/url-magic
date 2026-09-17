@@ -4,3 +4,4 @@ export { CopyButton } from "./CopyButton";
 export { QRTab } from "./QRTab"
 export { ShortenerTab } from "./ShorternerTab";
 export { DashboardTab } from "./DashboardTab";
+export { LoadingStatus } from "./LoadingStatus";

@@ -1,19 +1,22 @@
 "use client"
 
 import { useState } from "react";
-import { Input, Button, CopyButton } from "@/components";
+import { Input, Button, CopyButton, LoadingStatus } from "@/components";
 import { getStoredLinks, useShortenUrl } from "@/hooks/useShortenUrl";
 import { ShortLink } from "@/types/response";
 
 export function ShortenerTab() {
   const [input, setInput] = useState("");
   const [error, setError] = useState("");
+  const [isShortening, setIsShortening] = useState(false);
   const [links, setLinks] = useState<ShortLink[]>(getStoredLinks);
   const { shortenUrl } = useShortenUrl();
 
   const shorten = async () => {
     const trimmed = input.trim();
-    if (!trimmed) return;
+    if (!trimmed || isShortening) return;
+    const startedAt = Date.now();
+    setIsShortening(true);
     try {
         const url = new URL(trimmed.startsWith("http") ? trimmed : `https://${trimmed}`);
         const result = await shortenUrl(url.href);
@@ -25,6 +28,9 @@ export function ShortenerTab() {
         setError("");
     } catch {
       setError("Enter a valid URL or check that the API is running.");
+    } finally {
+      const remainingTime = Math.max(0, 350 - (Date.now() - startedAt));
+      window.setTimeout(() => setIsShortening(false), remainingTime);
     }
   };
 
@@ -45,8 +51,14 @@ export function ShortenerTab() {
             </p>
             )}
         </div>
-        <Button onClick={shorten}>Shorten</Button>
+        <Button onClick={shorten} disabled={isShortening || !input.trim()}>
+          {isShortening ? "Working..." : "Shorten"}
+        </Button>
       </div>
+
+      {isShortening && (
+        <LoadingStatus label="Shortening your URL" detail="The server is preparing your link." />
+      )}
 
       {links.length > 0 && (
         <div>
