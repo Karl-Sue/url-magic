@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Input, Button, LoadingStatus } from '@/components';
-import { API_BASE_URL } from '@/libs/constants';
+import { useQR } from "@/hooks/useQR";
 
 export function QRTab() {
     const [input, setInput] = useState("");
@@ -11,12 +11,13 @@ export function QRTab() {
     const [qrSrc, setQrSrc] = useState<string | null>(null);
     const [error, setError] = useState("");
     const [isGenerating, setIsGenerating] = useState(false);
+    const { generateQr } = useQR();
 
     useEffect(() => () => {
         if (qrSrc) URL.revokeObjectURL(qrSrc);
     }, [qrSrc]);
 
-    const generateQr = async () => {
+    const handleGenerateQr = async () => {
         const trimmed = input.trim();
         if (!trimmed || isGenerating) return;
 
@@ -25,29 +26,22 @@ export function QRTab() {
         setError("");
 
         try {
-            const url = new URL(trimmed.startsWith("http") ? trimmed : `https://${trimmed}`);
-            const response = await fetch(`${API_BASE_URL}/qr`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                credentials: "include",
-                body: JSON.stringify({
-                    url: url.href,
-                    box_size: Math.max(1, Math.round(size / 22)),
-                }),
-            });
-
-            if (!response.ok) throw new Error("Failed to generate QR code");
-            const nextQrSrc = URL.createObjectURL(await response.blob());
+            const nextQrSrc = await generateQr(trimmed, Math.max(1, Math.round(size / 22)));
+            if (qrSrc) URL.revokeObjectURL(qrSrc);
             setQrSrc(nextQrSrc);
-        } catch {
-            setError("Enter a valid URL or check that the API is running.");
+        } catch (requestError) {
+            setError(
+                requestError instanceof Error
+                    ? requestError.message
+                    : "Unable to generate the QR code.",
+            );
         } finally {
             const remainingTime = Math.max(0, 350 - (Date.now() - startedAt));
             window.setTimeout(() => setIsGenerating(false), remainingTime);
         }
     };
 
-  return (
+    return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "72px", alignItems: "start" }}>
         <div style={{ display: "flex", flexDirection: "column", gap: "44px" }}>
             <div>
@@ -78,7 +72,7 @@ export function QRTab() {
                 />
             </div>
 
-            <Button variant="ghost" onClick={generateQr} disabled={isGenerating || !input.trim()}>
+            <Button variant="ghost" onClick={handleGenerateQr} disabled={isGenerating || !input.trim()}>
                 {isGenerating ? "Working..." : "Generate QR code"}
             </Button>
             {error && <p style={{ color: "#cc0000", fontFamily: "DM Sans, sans-serif", fontSize: "13px" }}>{error}</p>}
