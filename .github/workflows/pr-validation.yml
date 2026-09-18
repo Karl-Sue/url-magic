@@ -16,8 +16,33 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    outputs:
+      api: ${{ steps.filter.outputs.api }}
+      infra: ${{ steps.filter.outputs.infra }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4.2.2
+
+      - name: Detect path changes
+        id: filter
+        uses: dorny/paths-filter@v4
+        with:
+          filters: |
+            api:
+              - 'api/**'
+            infra:
+              - 'infra/**'
+            frontend:
+              - 'client/**'
+
   python-tests:
     name: Python tests
+    needs: changes
+    if: needs.changes.outputs.api == 'true'
     runs-on: ubuntu-latest
     env:
       SAFE_BROWSING: ${{ secrets.SAFE_BROWSING }}
@@ -53,31 +78,22 @@ jobs:
 
   terraform-validation:
     name: Terraform validation
+    needs: changes
+    if: needs.changes.outputs.infra == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4.1.2
-
-      - name: Detect infrastructure changes
-        id: changes
-        uses: dorny/paths-filter@v4
-        with:
-          filters: |
-            infrastructure:
-              - 'infra/**'
+        uses: actions/checkout@v4.2.2
 
       - name: Set up Terraform
-        if: steps.changes.outputs.infrastructure == 'true'
         uses: hashicorp/setup-terraform@v4
         with:
           terraform_version: '1.5.0'
 
       - name: Check Terraform formatting
-        if: steps.changes.outputs.infrastructure == 'true'
         run: terraform fmt -check -recursive infra
 
       - name: Validate Terraform environments
-        if: steps.changes.outputs.infrastructure == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -85,3 +101,27 @@ jobs:
             terraform -chdir="infra/environements/$environment" init -backend=false -input=false
             terraform -chdir="infra/environements/$environment" validate
           done
+
+  frontend-format:
+    name: Frontend format check
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4.2.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install dependencies
+        working-directory: client
+        run: npm ci
+
+      - name: Run lint
+        working-directory: client
+        run: npm run lint
