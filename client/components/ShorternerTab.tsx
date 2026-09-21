@@ -36,7 +36,7 @@ export function ShortenerTab() {
 
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "flex-end", gap: "20px", marginBottom: "56px" }}>
+      <div className="form-row-responsive" style={{ display: "flex", alignItems: "flex-end", gap: "20px", marginBottom: "56px" }}>
         <div style={{ flex: 1 }}>
             <Input
             value={input}

@@ -42,7 +42,7 @@ export function QRTab() {
     };
 
     return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "72px", alignItems: "start" }}>
+    <div className="qr-layout-grid" style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "72px", alignItems: "start" }}>
         <div style={{ display: "flex", flexDirection: "column", gap: "44px" }}>
             <div>
                 <label 
@@ -80,6 +80,7 @@ export function QRTab() {
         </div>
 
         <div
+        className="qr-preview-box"
         style={{
             width: size,
             height: size,

@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image";
 import { useState } from "react";
 import { QRTab, ShortenerTab, DashboardTab } from "@/components";
 import { useClient } from "@/hooks/useClient";
@@ -18,6 +19,19 @@ const TAB_TITLES: Record<Tab, { heading: string; sub: string }> = {
   dashboard: { heading: "Health Monitor", sub: "Track latency and uptime for this session."      },
 };
 
+const TAB_ICONS: Record<Tab, { src: string; alt: string }> = {
+  shorten:   { src: "/link.svg",     alt: "Shorten" },
+  qr:        { src: "/qr.svg",       alt: "QR Code" },
+  dashboard: { src: "/activity.svg", alt: "Dashboard" },
+};
+
+function TabIcon({ id }: { id: Tab }) {
+  const icon = TAB_ICONS[id];
+  return (
+    <Image src={icon.src} alt={icon.alt} width={20} height={20} />
+  );
+}
+
 export default function HomePage() {
   const { ready, error } = useClient();
   const [tab, setTab] = useState<Tab>("shorten");
@@ -27,33 +41,24 @@ export default function HomePage() {
   if (!ready) return null;
 
   return (
-    <div style={{ display: "flex", minHeight: "100%", background: "#ffffff" }}>
+    <div className="app-layout">
 
       {/* ── Sidebar ── */}
-      <aside style={{
-        width: "312px",
-        flexShrink: 0,
-        borderRight: "1px solid #e8e8e8",
-        display: "flex",
-        flexDirection: "column",
-        position: "sticky",
-        top: 0,
-        height: "100vh",
-        overflowY: "auto",
-      }}>
+      <aside className="app-sidebar">
         {/* Wordmark */}
         <div className="page-top wordmark">
           <h1 className="heading"> Url Magic </h1>
           <span className="tagline"> less url, more life </span>
         </div>
 
-        {/* Nav */}
-        <nav style={{ padding: "24px 19px", flex: 1 }}>
+        {/* Desktop Nav */}
+        <nav className="app-nav">
           {TABS.map((t) => (
             <button
               type="button"
               key={t.id}
               onClick={() => setTab(t.id)}
+              className={`nav-item ${tab === t.id ? "nav-item--active" : ""}`}
               style={{
                 display: "block",
                 width: "100%",
@@ -69,10 +74,10 @@ export default function HomePage() {
               onMouseEnter={(e) => { if (tab !== t.id) e.currentTarget.style.background = "#fafafa"; }}
               onMouseLeave={(e) => { if (tab !== t.id) e.currentTarget.style.background = "transparent"; }}
             >
-              <span style={{ display: "block", fontSize: "18px", fontFamily: "DM Sans, sans-serif", fontWeight: tab === t.id ? 500 : 400, color: tab === t.id ? "#111111" : "#555555" }}>
+              <span style={{ display: "block", fontSize: "16px", fontFamily: "DM Sans, sans-serif", fontWeight: tab === t.id ? 500 : 400, color: tab === t.id ? "#111111" : "#555555" }}>
                 {t.label}
               </span>
-              <span style={{ display: "block", fontSize: "14px", fontFamily: "DM Sans, sans-serif", color: "#b8b8b8", marginTop: "2px" }}>
+              <span className="nav-desc" style={{ display: "block", fontSize: "14px", fontFamily: "DM Sans, sans-serif", color: "#b8b8b8", marginTop: "2px" }}>
                 {t.description}
               </span>
             </button>
@@ -81,7 +86,7 @@ export default function HomePage() {
       </aside>
 
       {/* ── Main ── */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
+      <div className="app-main">
         {/* Page header */}
         <div className="page-top page-header">
           <h1 className="heading"> {heading} </h1>
@@ -89,7 +94,7 @@ export default function HomePage() {
         </div>
 
         {/* Content */}
-        <main style={{ padding: "62px 67px 115px" }}>
+        <main className="app-content">
           <section hidden={tab !== "shorten"}>
             <ShortenerTab />
           </section>
@@ -101,6 +106,27 @@ export default function HomePage() {
           </section>
         </main>
       </div>
+
+      {/* ── Mobile Bottom Navigation Bar ── */}
+      <nav className="mobile-bottom-nav" aria-label="Mobile Navigation">
+        {TABS.map((t) => {
+          const isActive = tab === t.id;
+          return (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => setTab(t.id)}
+              className={`mobile-nav-btn ${isActive ? "mobile-nav-btn--active" : ""}`}
+              aria-current={isActive ? "page" : undefined}
+            >
+              <div className="mobile-nav-icon">
+                <TabIcon id={t.id} />
+              </div>
+              <span className="mobile-nav-label">{t.label}</span>
+            </button>
+          );
+        })}
+      </nav>
     </div>
   );
 }

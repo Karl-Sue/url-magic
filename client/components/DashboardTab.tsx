@@ -162,7 +162,7 @@ export function DashboardTab() {
   return (
     <div>
       {/* Stats */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1px", background: "#d8d8d8", border: "1px solid #d8d8d8", marginBottom: "56px" }}>
+      <div className="stats-grid-responsive" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1px", background: "#d8d8d8", border: "1px solid #d8d8d8", marginBottom: "56px" }}>
         {[
           { label: "Online",      value: online,               color: "#008800" },
           { label: "Offline",     value: offline,              color: "#cc0000" },
@@ -176,7 +176,7 @@ export function DashboardTab() {
       </div>
 
       {/* Add row */}
-      <div style={{ display: "flex", alignItems: "flex-end", gap: "20px", marginBottom: "40px" }}>
+      <div className="form-row-responsive" style={{ display: "flex", alignItems: "flex-end", gap: "20px", marginBottom: "40px" }}>
         <div style={{ flex: 1 }}>
           <Input value={input} onChange={setInput} onKeyDown={(e) => e.key === "Enter" && addUrl()} placeholder="https://url-to-monitor.com" />
         </div>
@@ -207,26 +207,27 @@ export function DashboardTab() {
       )}
 
       {/* Table */}
-      <div>
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 90px 100px 140px 160px 48px",
-          gap: "20px",
-          padding: "10px 0",
-          borderBottom: "1.5px solid #111111",
-          fontSize: "12px",
-          letterSpacing: "0.08em",
-          textTransform: "uppercase",
-          color: "#b0b0b0",
-          fontFamily: "DM Sans, sans-serif",
-        }}>
-          <span>URL</span>
-          <span>Status</span>
-          <span>Latency</span>
-          <span>Checked</span>
-          <span>History</span>
-          <span />
-        </div>
+      <div className="dashboard-table-container">
+        <div className="dashboard-table-inner">
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 90px 100px 140px 160px 48px",
+            gap: "20px",
+            padding: "10px 0",
+            borderBottom: "1.5px solid #111111",
+            fontSize: "12px",
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
+            color: "#b0b0b0",
+            fontFamily: "DM Sans, sans-serif",
+          }}>
+            <span>URL</span>
+            <span>Status</span>
+            <span>Latency</span>
+            <span>Checked</span>
+            <span>History</span>
+            <span />
+          </div>
 
         {urls.length === 0 && (
           <p style={{ padding: "40px 0", fontSize: "15px", color: "#c0c0c0", fontFamily: "DM Sans, sans-serif" }}>No URLs added yet.</p>
@@ -288,6 +289,7 @@ export function DashboardTab() {
             </div>
           </div>
         ))}
+        </div>
       </div>
     </div>
   );

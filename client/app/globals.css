@@ -203,6 +203,176 @@ input::placeholder {
   font-size: 15px;
 }
 
+.app-layout {
+  display: flex;
+  min-height: 100%;
+  background: #ffffff;
+}
+
+.app-sidebar {
+  width: 312px;
+  flex-shrink: 0;
+  border-right: 1px solid #e8e8e8;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.app-nav {
+  padding: 24px 19px;
+  flex: 1;
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.app-content {
+  padding: 62px 67px 115px;
+}
+
+/* Mobile Bottom Navigation (hidden on desktop) */
+.mobile-bottom-nav {
+  display: none;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .app-layout {
+    flex-direction: column;
+  }
+
+  .app-sidebar {
+    width: 100%;
+    height: auto;
+    position: static;
+    border-right: none;
+    border-bottom: 1px solid #e8e8e8;
+  }
+
+  .app-sidebar .page-top {
+    height: auto;
+    padding: 16px 20px;
+    border-bottom: none;
+  }
+
+  .app-sidebar .wordmark {
+    padding: 16px 20px;
+  }
+
+  /* Hide the vertical desktop nav on mobile */
+  .app-nav {
+    display: none;
+  }
+
+  .page-header {
+    padding: 20px 20px 16px;
+    height: auto;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .app-content {
+    padding: 24px 20px 96px; /* extra bottom padding so content is never covered by bottom nav */
+  }
+
+  /* Sticky Bottom Navigation */
+  .mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: #ffffff;
+    border-top: 1px solid #e8e8e8;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.04);
+    z-index: 50;
+    align-items: stretch;
+    justify-content: space-around;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  .mobile-nav-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px 4px;
+    color: #888888;
+    opacity: 0.55;
+    transition: opacity 120ms ease, color 120ms ease;
+    min-height: 48px; /* Touch target size */
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-nav-btn--active {
+    color: #111111;
+    opacity: 1;
+    font-weight: 500;
+  }
+
+  .mobile-nav-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-nav-label {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    letter-spacing: 0.02em;
+    line-height: 1;
+  }
+
+  .form-row-responsive {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 16px !important;
+  }
+
+  .form-row-responsive button {
+    width: 100%;
+  }
+
+  .qr-layout-grid {
+    grid-template-columns: 1fr !important;
+    gap: 32px !important;
+  }
+
+  .qr-preview-box {
+    justify-self: center;
+    max-width: 100%;
+  }
+
+  .stats-grid-responsive {
+    grid-template-columns: 1fr !important;
+  }
+
+  .stats-grid-responsive > div {
+    padding: 20px !important;
+  }
+
+  .dashboard-table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .dashboard-table-inner {
+    min-width: 640px;
+  }
+}
+
 @media (max-width: 640px) {
   .error-page .heading {
     font-size: 28px;
