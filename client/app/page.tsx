@@ -8,20 +8,20 @@ import { useClient } from "@/hooks/useClient";
 type Tab = "shorten" | "qr" | "dashboard";
 
 const TABS: { id: Tab; label: string; description: string }[] = [
-  { id: "shorten",   label: "Shorten",   description: "Generate short links" },
-  { id: "qr",        label: "QR Code",   description: "Create QR images"     },
-  { id: "dashboard", label: "Dashboard", description: "Monitor URL health"   },
+  { id: "shorten", label: "Shorten", description: "Generate short links" },
+  { id: "qr", label: "QR Code", description: "Create QR images" },
+  { id: "dashboard", label: "Dashboard", description: "Monitor URL health" },
 ];
 
 const TAB_TITLES: Record<Tab, { heading: string; sub: string }> = {
-  shorten:   { heading: "URL Shortener",  sub: "Paste a long URL and get a short one."          },
-  qr:        { heading: "QR Generator",   sub: "Create a scannable QR code for any URL."        },
-  dashboard: { heading: "Health Monitor", sub: "Track latency and uptime for this session."      },
+  shorten: { heading: "URL Shortener", sub: "Paste a long URL and get a short one." },
+  qr: { heading: "QR Generator", sub: "Create a scannable QR code for any URL." },
+  dashboard: { heading: "Health Monitor", sub: "Track latency and uptime for this session." },
 };
 
 const TAB_ICONS: Record<Tab, { src: string; alt: string }> = {
-  shorten:   { src: "/link.svg",     alt: "Shorten" },
-  qr:        { src: "/qr.svg",       alt: "QR Code" },
+  shorten: { src: "/link.svg", alt: "Shorten" },
+  qr: { src: "/qr.svg", alt: "QR Code" },
   dashboard: { src: "/activity.svg", alt: "Dashboard" },
 };
 
