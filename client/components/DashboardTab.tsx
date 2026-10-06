@@ -6,6 +6,8 @@ import { useState, useCallback, useEffect } from "react";
 import { MonitoredUrl } from "@/types/response";
 import { Input, Button } from "@/components"
 import { useHealthCheck } from "@/hooks/useHealthCheck";
+import { ApiError, NetworkError } from "@/libs/errors";
+import { normalizeWebUrl } from "@/libs/url";
 import { SPARKBAR_SLOTS, STATUS_LABELS } from "@/libs/constants";
 import { useMonitoredUrls } from "@/hooks/useMonitoredUrls";
 
@@ -76,9 +78,18 @@ export function DashboardTab() {
         )
       );
     } catch (error) {
+      const errorMessage =
+        error instanceof NetworkError
+          ? "Unable to connect to the server — the API appears to be down."
+          : error instanceof ApiError
+          ? error.message || `Server error (${error.status})`
+          : error instanceof Error
+          ? error.message
+          : "Health check failed";
+
       updateUrls((current) =>
         current.map((u) => u.id === id
-          ? { ...u, status: "offline", lastChecked: new Date(), error: error instanceof Error ? error.message : "Health check failed" }
+          ? { ...u, status: "offline", lastChecked: new Date(), error: errorMessage }
           : u
         )
       );
@@ -122,11 +133,22 @@ export function DashboardTab() {
         };
       }));
     } catch (error) {
+      const errorMessage =
+        error instanceof NetworkError
+          ? "Unable to connect to the server — the API appears to be down."
+          : error instanceof ApiError
+          ? error.message || `Server error (${error.status})`
+          : error instanceof Error
+          ? error.message
+          : "Health check failed";
+
+      setLimitError(errorMessage);
+
       updateUrls((current) => current.map((u) => ({
         ...u,
         status: "offline",
         lastChecked: new Date(),
-        error: error instanceof Error ? error.message : "Health check failed",
+        error: errorMessage,
       })));
     } finally {
       const remainingTime = Math.max(0, 350 - (Date.now() - startedAt));
@@ -147,11 +169,14 @@ export function DashboardTab() {
   const addUrl = () => {
     const trimmed = input.trim();
     if (!trimmed) return;
-    try {
-      const url = new URL(trimmed.startsWith("http") ? trimmed : `https://${trimmed}`);
-      addMonitoredUrl(url.href);
-      setInput("");
-    } catch { /* noop */ }
+    const validUrl = normalizeWebUrl(trimmed);
+    if (!validUrl) {
+      setLimitError("Please enter a valid URL (e.g. example.com).");
+      return;
+    }
+    addMonitoredUrl(validUrl);
+    setInput("");
+    setLimitError(null);
   };
 
   const online = urls.filter((u) => u.status === "online").length;

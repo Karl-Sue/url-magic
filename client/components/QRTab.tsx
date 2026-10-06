@@ -4,6 +4,8 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Input, Button, LoadingStatus } from '@/components';
 import { useQR } from "@/hooks/useQR";
+import { ApiError, NetworkError } from "@/libs/errors";
+import { normalizeWebUrl } from "@/libs/url";
 
 export function QRTab() {
     const [input, setInput] = useState("");
@@ -21,20 +23,31 @@ export function QRTab() {
         const trimmed = input.trim();
         if (!trimmed || isGenerating) return;
 
+        // 1. Client-side URL validation
+        const validUrl = normalizeWebUrl(trimmed);
+        if (!validUrl) {
+            setError("Please enter a valid URL (e.g. example.com).");
+            return;
+        }
+
         const startedAt = Date.now();
         setIsGenerating(true);
         setError("");
 
         try {
-            const nextQrSrc = await generateQr(trimmed, Math.max(1, Math.round(size / 22)));
+            const nextQrSrc = await generateQr(validUrl, Math.max(1, Math.round(size / 22)));
             if (qrSrc) URL.revokeObjectURL(qrSrc);
             setQrSrc(nextQrSrc);
         } catch (requestError) {
-            setError(
-                requestError instanceof Error
-                    ? requestError.message
-                    : "Unable to generate the QR code.",
-            );
+            if (requestError instanceof NetworkError) {
+                setError(requestError.message || "Unable to connect to the server — the API appears to be down.");
+            } else if (requestError instanceof ApiError) {
+                setError(requestError.message || `Server returned an error (${requestError.status}).`);
+            } else if (requestError instanceof Error) {
+                setError(requestError.message);
+            } else {
+                setError("Unable to generate the QR code.");
+            }
         } finally {
             const remainingTime = Math.max(0, 350 - (Date.now() - startedAt));
             window.setTimeout(() => setIsGenerating(false), remainingTime);

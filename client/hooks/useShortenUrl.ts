@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { ShortLink } from "@/types/response";
 import { API_BASE_URL, SHORT_LINKS_STORAGE_KEY } from "@/libs/constants";
+import { ApiError, NetworkError } from "@/libs/errors";
 
 interface ShortenUrlResponse {
   short_code: string;
@@ -65,15 +66,37 @@ function storeLink(link: ShortLink): void {
 {/* Calling shorten API */}
 export function useShortenUrl() {
   const shortenUrl = async (url: string): Promise<ShortLink> => {
-    const response = await fetch(`${API_BASE_URL}/shorten`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ url }),
-    });
+    let response: Response;
+    try {
+      response = await fetch(`${API_BASE_URL}/shorten`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ url }),
+      });
+    } catch {
+      throw new NetworkError("Unable to connect to the server. The API appears to be offline.");
+    }
 
     if (!response.ok) {
-      throw new Error("Failed to shorten URL");
+      // 502 Bad Gateway, 503 Service Unavailable, and 504 Gateway Timeout
+      // are returned by proxies (like SWA CLI) when the upstream API server is offline.
+      if (response.status === 502 || response.status === 503 || response.status === 504) {
+        throw new NetworkError("Unable to connect to the server — the API appears to be down.");
+      }
+
+      let detail = "Failed to shorten URL";
+      try {
+        const body = await response.json();
+        if (typeof body?.detail === "string") {
+          detail = body.detail;
+        } else if (Array.isArray(body?.detail) && body.detail[0]?.msg) {
+          detail = body.detail[0].msg;
+        }
+      } catch {
+        detail = response.statusText || `Server error (${response.status})`;
+      }
+      throw new ApiError(response.status, detail);
     }
 
     const result = (await response.json()) as ShortenUrlResponse;

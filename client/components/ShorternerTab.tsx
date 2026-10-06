@@ -5,6 +5,8 @@ import Image from "next/image";
 import dynamic from "next/dynamic";
 import { Input, Button, CopyButton, LoadingStatus } from "@/components";
 import { getStoredLinks, useShortenUrl } from "@/hooks/useShortenUrl";
+import { ApiError, NetworkError } from "@/libs/errors";
+import { normalizeWebUrl } from "@/libs/url";
 import { ShortLink } from "@/types/response";
 
 const DotLottieReact = dynamic(
@@ -93,16 +95,29 @@ export function ShortenerTab() {
   const shorten = async () => {
     const trimmed = input.trim();
     if (!trimmed || isShortening) return;
+
+    // 1. Client-side URL validation
+    const validUrl = normalizeWebUrl(trimmed);
+    if (!validUrl) {
+      setError("Please enter a valid URL (e.g. example.com).");
+      return;
+    }
+
     const startedAt = Date.now();
     setIsShortening(true);
     try {
-      const url = new URL(trimmed.startsWith("http") ? trimmed : `https://${trimmed}`);
-      const result = await shortenUrl(url.href);
+      const result = await shortenUrl(validUrl);
       setLinks((prev) => [result, ...prev]);
       setInput("");
       setError("");
-    } catch {
-      setError("Enter a valid URL or check that the API is running.");
+    } catch (err) {
+      if (err instanceof NetworkError) {
+        setError(err.message || "Unable to connect to the server — the API appears to be down.");
+      } else if (err instanceof ApiError) {
+        setError(err.message || `Server returned an error (${err.status}).`);
+      } else {
+        setError("An unexpected error occurred. Please try again.");
+      }
     } finally {
       const remainingTime = Math.max(0, 350 - (Date.now() - startedAt));
       window.setTimeout(() => setIsShortening(false), remainingTime);
