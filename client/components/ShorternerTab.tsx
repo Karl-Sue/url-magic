@@ -163,7 +163,15 @@ export function ShortenerTab() {
       )}
 
       {/* Relative container keeps both panels in flow without layout shift */}
-      <div style={{ position: "relative" }}>
+      <div
+        style={{
+          position: "relative",
+          minHeight: "calc(100vh - 420px)",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: hasLinks ? "flex-start" : "center",
+        }}
+      >
 
         {/* ── Empty state (sleeping cat) ── */}
         <FadeSection visible={!hasLinks}>
