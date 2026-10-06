@@ -1,10 +1,87 @@
 "use client"
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { Input, Button, CopyButton, LoadingStatus } from "@/components";
 import { getStoredLinks, useShortenUrl } from "@/hooks/useShortenUrl";
 import { ShortLink } from "@/types/response";
 
+const DotLottieReact = dynamic(
+  () => import("@lottiefiles/dotlottie-react").then((mod) => mod.DotLottieReact),
+  { ssr: false },
+);
+
+/* ── Fade wrapper ──────────────────────────────────────── */
+function FadeSection({ visible, children }: { visible: boolean; children: React.ReactNode }) {
+  return (
+    <div
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(10px)",
+        transition: "opacity 350ms ease, transform 350ms ease",
+        pointerEvents: visible ? "auto" : "none",
+        position: visible ? "relative" : "absolute",
+        width: "100%",
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+/* ── Empty state ───────────────────────────────────────── */
+function EmptyState() {
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        textAlign: "center",
+        paddingTop: "8px",
+        paddingBottom: "24px",
+        userSelect: "none",
+      }}
+    >
+      <DotLottieReact
+        src="/animations/sleeping.lottie"
+        loop
+        autoplay
+        style={{
+          width: "clamp(480px, 28vh, 320px)",
+          height: "clamp(217px, 28vh, 320px)",
+        }}
+      />
+      <p
+        style={{
+          fontFamily: "var(--font-sans)",
+          fontSize: "22px",
+          fontWeight: 600,
+          letterSpacing: "-0.025em",
+          color: "#111111",
+          margin: "8px 0 6px",
+        }}
+      >
+        Starving for links.
+      </p>
+      <p
+        style={{
+          fontFamily: "var(--font-sans)",
+          fontSize: "14px",
+          color: "#a0a0a0",
+          lineHeight: 1.6,
+          maxWidth: "420px",
+          margin: 0,
+        }}
+      >
+        The cat is currently empty and snoozing. Feed it an oversized URL above to wake it up and start your list.
+      </p>
+    </div>
+  );
+}
+
+/* ── Main component ────────────────────────────────────── */
 export function ShortenerTab() {
   const [input, setInput] = useState("");
   const [error, setError] = useState("");
@@ -18,14 +95,11 @@ export function ShortenerTab() {
     const startedAt = Date.now();
     setIsShortening(true);
     try {
-        const url = new URL(trimmed.startsWith("http") ? trimmed : `https://${trimmed}`);
-        const result = await shortenUrl(url.href);
-        setLinks((prev) => [
-          result,
-        ...prev,
-        ]);
-        setInput("");
-        setError("");
+      const url = new URL(trimmed.startsWith("http") ? trimmed : `https://${trimmed}`);
+      const result = await shortenUrl(url.href);
+      setLinks((prev) => [result, ...prev]);
+      setInput("");
+      setError("");
     } catch {
       setError("Enter a valid URL or check that the API is running.");
     } finally {
@@ -34,22 +108,25 @@ export function ShortenerTab() {
     }
   };
 
+  const hasLinks = links.length > 0;
+
   return (
     <div>
+      {/* Input row */}
       <div className="form-row-responsive" style={{ display: "flex", alignItems: "flex-end", gap: "20px", marginBottom: "56px" }}>
         <div style={{ flex: 1 }}>
-            <Input
+          <Input
             value={input}
             onChange={(v) => { setInput(v); setError(""); }}
             onKeyDown={(e) => e.key === "Enter" && shorten()}
             placeholder="https://your-long-url.com/path/to/page"
             autoFocus
-            />
-            {error && (
+          />
+          {error && (
             <p style={{ margin: "8px 0 0", fontSize: "13px", color: "#cc0000", fontFamily: "DM Sans, sans-serif" }}>
-                {error}
+              {error}
             </p>
-            )}
+          )}
         </div>
         <Button onClick={shorten} disabled={isShortening || !input.trim()}>
           {isShortening ? "Working..." : "Shorten"}
@@ -60,8 +137,16 @@ export function ShortenerTab() {
         <LoadingStatus label="Shortening your URL" detail="The server is preparing your link." />
       )}
 
-      {links.length > 0 && (
-        <div>
+      {/* Relative container keeps both panels in flow without layout shift */}
+      <div style={{ position: "relative" }}>
+
+        {/* ── Empty state (sleeping cat) ── */}
+        <FadeSection visible={!hasLinks}>
+          <EmptyState />
+        </FadeSection>
+
+        {/* ── Links dashboard ── */}
+        <FadeSection visible={hasLinks}>
           <p style={{ fontSize: "12px", letterSpacing: "0.08em", textTransform: "uppercase", color: "#b0b0b0", marginBottom: "20px", fontFamily: "DM Sans, sans-serif" }}>
             Links — {links.length}
           </p>
@@ -86,13 +171,16 @@ export function ShortenerTab() {
                 </p>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: "20px", flexShrink: 0 }}>
-                <span style={{ fontSize: "13px", color: "#d8d8d8", fontFamily: "DM Mono, monospace" }}>{new Date(link.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
+                <span style={{ fontSize: "13px", color: "#d8d8d8", fontFamily: "DM Mono, monospace" }}>
+                  {new Date(link.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                </span>
                 <CopyButton text={link.shortURL} />
               </div>
             </div>
           ))}
-        </div>
-      )}
+        </FadeSection>
+
+      </div>
     </div>
   );
 }
