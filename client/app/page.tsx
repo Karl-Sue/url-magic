@@ -14,9 +14,9 @@ const TABS: { id: Tab; label: string; description: string }[] = [
 ];
 
 const TAB_TITLES: Record<Tab, { heading: string; sub: string }> = {
-  shorten: { heading: "Shorten your URLs.", sub: "URL Magic is a free, open-source URL shortener" },
-  qr: { heading: "Generate a QR code.", sub: "URL Magic is a free, open-source QR code generator" },
-  dashboard: { heading: "Monitor your links.", sub: "Track latency and uptime for your short URLs" },
+  shorten: { heading: "Shorten your URLs", sub: "URL Magic is a free, open-source URL shortener" },
+  qr: { heading: "Generate a QR code", sub: "URL Magic is a free, open-source QR code generator" },
+  dashboard: { heading: "Monitor your links", sub: "Track latency and uptime for your short URLs" },
 };
 
 const TAB_ICONS: Record<Tab, { src: string; alt: string }> = {
