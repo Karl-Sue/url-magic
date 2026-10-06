@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react";
+import Image from "next/image";
 import dynamic from "next/dynamic";
 import { Input, Button, CopyButton, LoadingStatus } from "@/components";
 import { getStoredLinks, useShortenUrl } from "@/hooks/useShortenUrl";
@@ -129,7 +130,16 @@ export function ShortenerTab() {
           )}
         </div>
         <Button onClick={shorten} disabled={isShortening || !input.trim()}>
-          {isShortening ? "Working..." : "Shorten"}
+          <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
+            <Image
+              src="/paw-print.svg"
+              alt="paw print"
+              width={16}
+              height={16}
+              style={{ filter: "brightness(0) invert(1)" }}
+            />
+            <span>{isShortening ? "Working..." : "Shorten"}</span>
+          </span>
         </Button>
       </div>
 
