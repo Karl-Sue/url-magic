@@ -14,9 +14,9 @@ const TABS: { id: Tab; label: string; description: string }[] = [
 ];
 
 const TAB_TITLES: Record<Tab, { heading: string; sub: string }> = {
-  shorten: { heading: "URL Shortener", sub: "Paste a long URL and get a short one." },
-  qr: { heading: "QR Generator", sub: "Create a scannable QR code for any URL." },
-  dashboard: { heading: "Health Monitor", sub: "Track latency and uptime for this session." },
+  shorten: { heading: "Shorten your URLs.", sub: "URL Magic is a free, open-source URL shortener" },
+  qr: { heading: "Generate a QR code.", sub: "URL Magic is a free, open-source QR code generator" },
+  dashboard: { heading: "Monitor your links.", sub: "Track latency and uptime for your short URLs" },
 };
 
 const TAB_ICONS: Record<Tab, { src: string; alt: string }> = {
@@ -46,9 +46,9 @@ export default function HomePage() {
       {/* ── Sidebar ── */}
       <aside className="app-sidebar">
         {/* Wordmark */}
-        <div className="page-top wordmark">
-          <h1 className="heading"> Url Magic </h1>
-          <span className="tagline"> less url, more life </span>
+        <div className="page-top wordmark" style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+          <h1 className="heading" style={{ fontFamily: "var(--font-sans)", fontSize: "20px", fontWeight: 600, letterSpacing: "-0.03em", lineHeight: 1.1 }}>Url Magic</h1>
+          <span className="tagline" style={{ marginTop: "4px" }}>less url, more life</span>
         </div>
 
         {/* Desktop Nav */}
@@ -89,8 +89,31 @@ export default function HomePage() {
       <div className="app-main">
         {/* Page header */}
         <div className="page-top page-header">
-          <h1 className="heading"> {heading} </h1>
-          <p className="tagline"> {sub} </p>
+          <p
+            className="tagline"
+            style={{
+              textTransform: "uppercase",
+              letterSpacing: "0.1em",
+              fontSize: "11px",
+              marginBottom: "10px",
+            }}
+          >
+            {sub}
+          </p>
+          <h1
+            className="heading"
+            style={{
+              fontFamily: "var(--font-sans)",
+              fontSize: "clamp(26px, 3.5vw, 42px)",
+              fontWeight: 600,
+              lineHeight: 1.1,
+              letterSpacing: "-0.03em",
+              margin: 0,
+              color: "#111111",
+            }}
+          >
+            {heading}
+          </h1>
         </div>
 
         {/* Content */}
