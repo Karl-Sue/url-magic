@@ -7,7 +7,15 @@ export function normalizeWebUrl(input: string): string | null {
   const trimmed = input.trim();
   if (!trimmed) return null;
 
-  // 1. If input contains "://" it must strictly start with "http://" or "https://"
+  // 1. Prohibit raw unencoded characters:
+  // - Spaces: ' ' (must be encoded as %20 or +)
+  // - HTML Delimiters: <, >, " (must be encoded as %3C, %3E, %22)
+  // - Unsafe Symbols: \, ^, `, {, } (must be encoded or stripped)
+  if (/[\s<>"\\^`{}]/.test(trimmed)) {
+    return null;
+  }
+
+  // 2. If input contains "://" it must strictly start with "http://" or "https://"
   // Rejects typos like "ht!p://", "htp://", "ftp://", etc.
   if (trimmed.includes("://")) {
     if (!/^https?:\/\//i.test(trimmed)) {
@@ -15,7 +23,7 @@ export function normalizeWebUrl(input: string): string | null {
     }
   }
 
-  // 2. Prepend https:// if no scheme is present
+  // 3. Prepend https:// if no scheme is present
   const candidate = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
 
   try {
