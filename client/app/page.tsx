@@ -20,9 +20,9 @@ const TAB_TITLES: Record<Tab, { heading: string; sub: string }> = {
 };
 
 const TAB_ICONS: Record<Tab, { src: string; alt: string }> = {
-  shorten: { src: "/link.svg", alt: "Shorten" },
-  qr: { src: "/qr.svg", alt: "QR Code" },
-  dashboard: { src: "/activity.svg", alt: "Dashboard" },
+  shorten: { src: "icons/link.svg", alt: "Shorten" },
+  qr: { src: "icons/qr.svg", alt: "QR Code" },
+  dashboard: { src: "icons/activity.svg", alt: "Dashboard" },
 };
 
 function TabIcon({ id }: { id: Tab }) {

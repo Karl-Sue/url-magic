@@ -147,7 +147,7 @@ export function ShortenerTab() {
         <Button onClick={shorten} disabled={isShortening || !input.trim()}>
           <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
             <Image
-              src="/paw-print.svg"
+              src="icons/paw-print.svg"
               alt="paw print"
               width={16}
               height={16}

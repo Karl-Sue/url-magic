@@ -300,7 +300,7 @@ export function DashboardTab() {
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#111111")}
                 onMouseLeave={(e) => (e.currentTarget.style.color = "#c8c8c8")}
               >
-                <Image src="/refresh.svg" alt="" width={15} height={15} />
+                <Image src="icons/refresh.svg" alt="" width={15} height={15} />
               </button>
               <button
                 onClick={() => removeUrl(u.id)}
@@ -309,7 +309,7 @@ export function DashboardTab() {
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#cc0000")}
                 onMouseLeave={(e) => (e.currentTarget.style.color = "#c8c8c8")}
               >
-                <Image src="/close.svg" alt="" width={15} height={15} />
+                <Image src="icons/close.svg" alt="" width={15} height={15} />
               </button>
             </div>
           </div>
