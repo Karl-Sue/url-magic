@@ -46,9 +46,54 @@ export default function HomePage() {
       {/* ── Sidebar ── */}
       <aside className="app-sidebar">
         {/* Wordmark */}
-        <div className="page-top wordmark" style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
-          <h1 className="heading" style={{ fontFamily: "var(--font-sans)", fontSize: "20px", fontWeight: 600, letterSpacing: "-0.03em", lineHeight: 1.1 }}>Url Magic</h1>
-          <span className="tagline" style={{ marginTop: "4px" }}>less url, more life</span>
+        <div
+          className="page-top wordmark"
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            gap: "5px",
+          }}
+        >
+          <Image
+            src="/images/logo4.png"
+            alt="CatBite"
+            width={541}
+            height={461}
+            style={{
+              objectFit: "contain",
+              flexShrink: 0,
+              width: "auto",
+              height: "82px",
+              maxHeight: "88px",
+            }}
+            priority
+          />
+          <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+            <h1
+              className="heading"
+              style={{
+                fontFamily: "var(--font-sans)",
+                fontSize: "24px",
+                fontWeight: 700,
+                letterSpacing: "-0.03em",
+                lineHeight: 1.1,
+              }}
+            >
+              CatBite
+            </h1>
+            <span
+              className="tagline"
+              style={{
+                marginTop: "4px",
+                fontSize: "14px",
+                color: "#737373",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Feed. Chomp. Share.
+            </span>
+          </div>
         </div>
 
         {/* Desktop Nav */}
