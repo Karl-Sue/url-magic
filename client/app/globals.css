@@ -263,6 +263,34 @@ input::placeholder {
   margin-bottom: 10px;
 }
 
+/* ── Dashboard Table (Desktop) ── */
+.dashboard-table-header {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) 90px 100px 140px 160px 52px;
+  gap: 20px;
+  padding: 10px 0;
+  border-bottom: 1.5px solid #111111;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #b0b0b0;
+  font-family: var(--font-sans);
+}
+
+.dashboard-table-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) 90px 100px 140px 160px 52px;
+  gap: 20px;
+  padding: 18px 0;
+  border-bottom: 1px solid #f2f2f2;
+  align-items: center;
+  transition: background 100ms;
+}
+
+.dashboard-row-meta {
+  display: contents;
+}
+
 /* ── Mobile & Tablet ─────────────────────────────── */
 @media (max-width: 1024px) {
   .app-layout {
@@ -378,12 +406,60 @@ input::placeholder {
   }
 
   .dashboard-table-container {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    overflow-x: hidden;
   }
 
   .dashboard-table-inner {
-    min-width: 640px;
+    min-width: 100%;
+  }
+
+  .dashboard-table-header,
+  .dashboard-table-row {
+    grid-template-columns: minmax(0, 1fr) 72px 58px 48px;
+    gap: 8px;
+    padding: 12px 0;
+  }
+
+  /* Hide Checked & History on mobile to maximize room for URL */
+  .dashboard-col-checked,
+  .dashboard-col-history {
+    display: none !important;
+  }
+
+  /* Compact mobile screens (width < 528px): 2-line stacked layout gives URL full line width */
+  @media (max-width: 527.98px) {
+    .dashboard-table-header {
+      display: none !important;
+    }
+
+    .dashboard-table-row {
+      display: grid !important;
+      grid-template-columns: 1fr auto !important;
+      grid-template-areas:
+        "url actions"
+        "meta actions" !important;
+      row-gap: 6px;
+      column-gap: 10px;
+      padding: 14px 0;
+      align-items: center;
+    }
+
+    .dashboard-cell-url {
+      grid-area: url;
+      min-width: 0;
+    }
+
+    .dashboard-row-meta {
+      grid-area: meta;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .dashboard-cell-actions {
+      grid-area: actions;
+      align-self: center;
+    }
   }
 
   /* ── Bottom Navigation ── */

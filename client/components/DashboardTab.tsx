@@ -234,23 +234,12 @@ export function DashboardTab() {
       {/* Table */}
       <div className="dashboard-table-container">
         <div className="dashboard-table-inner">
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 90px 100px 140px 160px 48px",
-            gap: "20px",
-            padding: "10px 0",
-            borderBottom: "1.5px solid #111111",
-            fontSize: "12px",
-            letterSpacing: "0.08em",
-            textTransform: "uppercase",
-            color: "#b0b0b0",
-            fontFamily: "DM Sans, sans-serif",
-          }}>
+          <div className="dashboard-table-header">
             <span>URL</span>
             <span>Status</span>
             <span>Latency</span>
-            <span>Checked</span>
-            <span>History</span>
+            <span className="dashboard-col-checked">Checked</span>
+            <span className="dashboard-col-history">History</span>
             <span />
           </div>
 
@@ -259,44 +248,35 @@ export function DashboardTab() {
         )}
 
         {urls.map((u) => (
-          <div
-            key={u.id}
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 90px 100px 140px 160px 48px",
-              gap: "20px",
-              padding: "18px 0",
-              borderBottom: "1px solid #f2f2f2",
-              alignItems: "center",
-              transition: "background 100ms",
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = "#fafafa")}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-          >
-            <div style={{ minWidth: 0 }}>
+          <div key={u.id} className="dashboard-table-row">
+            <div className="dashboard-cell-url" style={{ minWidth: 0 }}>
               <p style={{ fontFamily: "DM Mono, monospace", fontSize: "14px", color: "#111111", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {u.url}
               </p>
               {u.error && <p style={{ fontSize: "12px", color: "#cc0000", marginTop: "3px", fontFamily: "DM Sans, sans-serif" }}>{u.error}</p>}
             </div>
 
-            <StatusLabel status={u.status} />
+            <div className="dashboard-row-meta">
+              <StatusLabel status={u.status} />
 
-            <span style={{ fontFamily: "DM Mono, monospace", fontSize: "14px", color: u.latency === null ? "#c0c0c0" : u.latency < 500 ? "#008800" : u.latency < 1500 ? "#b85c00" : "#cc0000" }}>
-              {formatMs(u.latency)}
-            </span>
+              <span style={{ fontFamily: "DM Mono, monospace", fontSize: "13px", color: u.latency === null ? "#c0c0c0" : u.latency < 500 ? "#008800" : u.latency < 1500 ? "#b85c00" : "#cc0000" }}>
+                {formatMs(u.latency)}
+              </span>
+            </div>
 
-            <span style={{ fontFamily: "DM Mono, monospace", fontSize: "13px", color: "#c0c0c0" }}>
+            <span className="dashboard-col-checked" style={{ fontFamily: "DM Mono, monospace", fontSize: "13px", color: "#c0c0c0" }}>
               {formatTime(u.lastChecked)}
             </span>
 
-            <Sparkbar history={u.history} />
+            <div className="dashboard-col-history">
+              <Sparkbar history={u.history} />
+            </div>
 
-            <div style={{ display: "flex", gap: "4px" }}>
+            <div className="dashboard-cell-actions" style={{ display: "flex", gap: "4px", justifyContent: "flex-end" }}>
               <button
                 onClick={() => checkOne(u.id, u.url)}
                 title="Refresh"
-                style={{ width: "32px", height: "32px", border: "none", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#c8c8c8", transition: "color 100ms" }}
+                style={{ width: "24px", height: "24px", border: "none", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#c8c8c8", transition: "color 100ms" }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#111111")}
                 onMouseLeave={(e) => (e.currentTarget.style.color = "#c8c8c8")}
               >
@@ -305,7 +285,7 @@ export function DashboardTab() {
               <button
                 onClick={() => removeUrl(u.id)}
                 title="Remove"
-                style={{ width: "32px", height: "32px", border: "none", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#c8c8c8", transition: "color 100ms" }}
+                style={{ width: "24px", height: "24px", border: "none", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#c8c8c8", transition: "color 100ms" }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#cc0000")}
                 onMouseLeave={(e) => (e.currentTarget.style.color = "#c8c8c8")}
               >
