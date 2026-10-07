@@ -13,10 +13,10 @@ const TABS: { id: Tab; label: string; description: string }[] = [
   { id: "dashboard", label: "Dashboard", description: "Monitor URL health" },
 ];
 
-const TAB_TITLES: Record<Tab, { heading: string; sub: string }> = {
-  shorten: { heading: "Shorten your URLs", sub: "URL Magic is a free, open-source URL shortener" },
-  qr: { heading: "Generate a QR code", sub: "URL Magic is a free, open-source QR code generator" },
-  dashboard: { heading: "Monitor your links", sub: "Track latency and uptime for your short URLs" },
+export const TAB_TITLES: Record<Tab, { heading: string; sub: string }> = {
+  shorten: { heading: "Feed the Cat", sub: "Chewed down to 6 bite-sized characters" },
+  qr: { heading: "Pawprint QR", sub: "Scannable codes for your nibbled links" },
+  dashboard: { heading: "Cat Nap & Stats", sub: "Track latency and link health" },
 };
 
 const TAB_ICONS: Record<Tab, { src: string; alt: string }> = {
@@ -134,31 +134,43 @@ export default function HomePage() {
       <div className="app-main">
         {/* Page header */}
         <div className="page-top page-header">
-          <p
-            className="tagline"
-            style={{
-              textTransform: "uppercase",
-              letterSpacing: "0.1em",
-              fontSize: "11px",
-              marginBottom: "10px",
-            }}
-          >
-            {sub}
-          </p>
-          <h1
-            className="heading"
-            style={{
-              fontFamily: "var(--font-sans)",
-              fontSize: "clamp(26px, 3.5vw, 42px)",
-              fontWeight: 600,
-              lineHeight: 1.1,
-              letterSpacing: "-0.03em",
-              margin: 0,
-              color: "#111111",
-            }}
-          >
-            {heading}
-          </h1>
+          <div className="page-header-text">
+            <p className="tagline page-header-tagline">
+              {sub}
+            </p>
+            <h1
+              className="heading"
+              style={{
+                fontFamily: "var(--font-sans)",
+                fontSize: "clamp(26px, 3.5vw, 42px)",
+                fontWeight: 600,
+                lineHeight: 1.1,
+                letterSpacing: "-0.03em",
+                margin: 0,
+                color: "#111111",
+              }}
+            >
+              {heading}
+            </h1>
+          </div>
+
+          {/* Cat illustration on mobile view */}
+          <div className="mobile-header-logo">
+            <Image
+              src="/images/logo4.png"
+              alt="CatBite"
+              width={541}
+              height={461}
+              style={{
+                objectFit: "contain",
+                flexShrink: 0,
+                width: "auto",
+                height: "60px",
+                maxHeight: "68px",
+              }}
+              priority
+            />
+          </div>
         </div>
 
         {/* Content */}
