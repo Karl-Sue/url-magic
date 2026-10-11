@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { MonitoredUrl } from "@/types/response";
 import { Input, Button } from "@/components"
 import { useHealthCheck } from "@/hooks/useHealthCheck";
@@ -15,6 +15,39 @@ const DotLottieReact = dynamic(
   () => import("@lottiefiles/dotlottie-react").then((mod) => mod.DotLottieReact),
   { ssr: false },
 );
+
+function AnimatedNumber({ value, duration = 1400 }: { value: number; duration?: number }) {
+  const [displayValue, setDisplayValue] = useState(value);
+  const startValueRef = useRef(value);
+  const startTimeRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    startValueRef.current = displayValue;
+    startTimeRef.current = null;
+
+    if (startValueRef.current === value) return;
+
+    let animId: number;
+    const animate = (timestamp: number) => {
+      if (!startTimeRef.current) startTimeRef.current = timestamp;
+      const elapsed = timestamp - startTimeRef.current;
+      const progress = Math.min(elapsed / duration, 1);
+      // Calmer easeOutQuart curve with smooth deceleration
+      const ease = 1 - Math.pow(1 - progress, 4);
+      const current = Math.round(startValueRef.current + (value - startValueRef.current) * ease);
+      setDisplayValue(current);
+
+      if (progress < 1) {
+        animId = requestAnimationFrame(animate);
+      }
+    };
+
+    animId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animId);
+  }, [value, duration]);
+
+  return <span style={{ fontVariantNumeric: "tabular-nums" }}>{displayValue}</span>;
+}
 
 {/* History URL check spark bar*/}
 function Sparkbar({ history }: { history: MonitoredUrl["history"] }) {
@@ -195,15 +228,21 @@ export function DashboardTab() {
         <div className="stat-card">
           <div className="stat-card-header">
             <span className="stat-card-label">Online</span>
-            <span className="stat-card-badge" style={{ background: "#ecfdf5", color: "#065f46" }}>
+            <span className="stat-card-badge" style={{ background: "#ecfdf5", color: "#065f46", border: "1px solid #a7f3d0" }}>
               <span className="live-beacon-dot" /> Live
             </span>
           </div>
           <div className="stat-card-value" style={{ color: "#059669" }}>
-            {online}
+            <AnimatedNumber value={online} />
           </div>
           <p className="stat-card-subtext">
-            {urls.length > 0 ? `${uptimePct}% operational` : "No URLs tracked"}
+            {urls.length > 0 ? (
+              <>
+                <AnimatedNumber value={uptimePct} />% operational
+              </>
+            ) : (
+              "No URLs tracked"
+            )}
           </p>
         </div>
 
@@ -212,17 +251,17 @@ export function DashboardTab() {
           <div className="stat-card-header">
             <span className="stat-card-label">Offline</span>
             {offline > 0 ? (
-              <span className="stat-card-badge" style={{ background: "#fef2f2", color: "#991b1b" }}>
+              <span className="stat-card-badge" style={{ background: "#fef2f2", color: "#991b1b", border: "1px solid #fecaca" }}>
                 <span className="alert-beacon-dot" /> Issue
               </span>
             ) : (
-              <span className="stat-card-badge" style={{ background: "#f4f4f5", color: "#71717a" }}>
+              <span className="stat-card-badge" style={{ background: "#f4f4f5", color: "#71717a", border: "1px solid #e4e4e7" }}>
                 All Clear
               </span>
             )}
           </div>
           <div className="stat-card-value" style={{ color: offline > 0 ? "#dc2626" : "#111111" }}>
-            {offline}
+            <AnimatedNumber value={offline} />
           </div>
           <p className="stat-card-subtext">
             {offline === 0
@@ -254,6 +293,14 @@ export function DashboardTab() {
                     : avgLatency < 1500
                     ? "#854d0e"
                     : "#991b1b",
+                border:
+                  avgLatency === null
+                    ? "1px solid #e4e4e7"
+                    : avgLatency < 500
+                    ? "1px solid #a7f3d0"
+                    : avgLatency < 1500
+                    ? "1px solid #fef08a"
+                    : "1px solid #fecaca",
               }}
             >
               {avgLatency === null
@@ -270,7 +317,7 @@ export function DashboardTab() {
               "—"
             ) : (
               <>
-                {avgLatency}
+                <AnimatedNumber value={avgLatency} />
                 <span className="stat-card-unit">ms</span>
               </>
             )}
