@@ -52,7 +52,7 @@ export default function HomePage() {
             display: "flex",
             flexDirection: "row",
             alignItems: "center",
-            gap: "5px",
+            gap: "8px",
           }}
         >
           <Image
@@ -60,6 +60,7 @@ export default function HomePage() {
             alt="CatBite"
             width={541}
             height={461}
+            className="wordmark-logo"
             style={{
               objectFit: "contain",
               flexShrink: 0,
@@ -69,9 +70,9 @@ export default function HomePage() {
             }}
             priority
           />
-          <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+          <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", minWidth: 0 }}>
             <h1
-              className="heading"
+              className="heading wordmark-title"
               style={{
                 fontFamily: "var(--font-sans)",
                 fontSize: "24px",
@@ -83,7 +84,7 @@ export default function HomePage() {
               CatBite
             </h1>
             <span
-              className="tagline"
+              className="tagline wordmark-tagline"
               style={{
                 marginTop: "4px",
                 fontSize: "14px",

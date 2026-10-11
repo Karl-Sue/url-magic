@@ -96,7 +96,8 @@ export function QRTab() {
     <div className="qr-studio-layout">
       {/* ── Left Column: Open Studio Controls ── */}
       <div className="qr-studio-controls">
-        <div>
+        {/* Studio Subheader (hidden on screens < 1024px) */}
+        <div className="qr-studio-header">
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
             <h2 style={{ fontFamily: "var(--font-sans)", fontSize: "16px", fontWeight: 700, margin: 0, color: "#111111" }}>
               QR Code Generator
