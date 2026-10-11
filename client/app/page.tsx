@@ -133,45 +133,42 @@ export default function HomePage() {
       {/* ── Main ── */}
       <div className="app-main">
         {/* Page header */}
-        <div className="page-top page-header">
+        <header className="page-top page-header">
           <div className="page-header-text">
-            <p className="tagline page-header-tagline">
-              {sub}
-            </p>
-            <h1
-              className="heading"
-              style={{
-                fontFamily: "var(--font-sans)",
-                fontSize: "clamp(26px, 3.5vw, 42px)",
-                fontWeight: 600,
-                lineHeight: 1.1,
-                letterSpacing: "-0.03em",
-                margin: 0,
-                color: "#111111",
-              }}
-            >
+            <div className="header-meta-row">
+              <span className="header-studio-pill">
+                <span className="header-studio-pill-dot" />
+                CatBite
+              </span>
+              <span className="header-meta-sep">/</span>
+              <span className="page-header-tagline">
+                {sub}
+              </span>
+            </div>
+            <h1 className="heading page-header-heading">
               {heading}
             </h1>
           </div>
 
-          {/* Cat illustration on mobile view */}
-          <div className="mobile-header-logo">
-            <Image
-              src="/images/logo4.png"
-              alt="CatBite"
-              width={541}
-              height={461}
-              style={{
-                objectFit: "contain",
-                flexShrink: 0,
-                width: "auto",
-                height: "60px",
-                maxHeight: "68px",
-              }}
-              priority
-            />
+          {/* Right Cluster: Live Status Beacon & Mascot Pod */}
+          <div className="header-right-cluster">
+            <div className="header-status-badge">
+              <span className="header-beacon-dot" />
+              <span className="header-status-label">Engine Online</span>
+            </div>
+
+            <div className="header-mascot-pod" title="CatBite Mascot">
+              <Image
+                src="/images/logo4.png"
+                alt="CatBite Mascot"
+                width={541}
+                height={461}
+                className="header-mascot-img"
+                priority
+              />
+            </div>
           </div>
-        </div>
+        </header>
 
         {/* Content */}
         <main className="app-content">
