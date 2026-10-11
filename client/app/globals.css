@@ -401,6 +401,227 @@ input::placeholder {
   animation: alert-pulse 2s infinite ease-in-out;
 }
 
+/* ── QR Studio Canvas (Direction 1) ──────────────── */
+.qr-studio-layout {
+  display: grid;
+  grid-template-columns: minmax(340px, 1.1fr) minmax(340px, 470px);
+  gap: 48px;
+  align-items: start;
+}
+
+.qr-studio-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.qr-studio-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.qr-studio-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.qr-studio-label {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #555555;
+}
+
+.qr-studio-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: #4b5563;
+  background: #f4f4f5;
+  border: 1px solid #e4e4e7;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.qr-preset-pill {
+  padding: 7px 14px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fafafa;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  color: #444444;
+  cursor: pointer;
+  transition: all 140ms ease;
+  white-space: nowrap;
+}
+
+.qr-preset-pill:hover {
+  border-color: #111111;
+  background: #ffffff;
+  color: #111111;
+}
+
+.qr-preset-pill--active {
+  background: #111111 !important;
+  color: #ffffff !important;
+  border-color: #111111 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.qr-range-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background: #e5e5e5;
+  border-radius: 999px;
+  outline: none;
+  transition: background 120ms ease;
+}
+
+.qr-range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #111111;
+  cursor: pointer;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  transition: transform 120ms ease;
+}
+
+.qr-range-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+.qr-range-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #111111;
+  cursor: pointer;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  transition: transform 120ms ease;
+}
+
+.qr-range-slider::-moz-range-thumb:hover {
+  transform: scale(1.15);
+}
+
+/* ── Studio Canvas Pedestal (Floating, Borderless) ── */
+.qr-studio-preview-pane {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.qr-canvas-pedestal {
+  position: relative;
+  width: 100%;
+  max-width: 470px;
+  min-height: 450px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  box-shadow: 0 20px 45px -12px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.02);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+  transition: box-shadow 240ms ease, transform 240ms ease;
+}
+
+.qr-canvas-pedestal:hover {
+  box-shadow: 0 24px 50px -12px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+/* Drafting corner reticles */
+.qr-canvas-corner {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-color: #d4d4d8;
+  pointer-events: none;
+}
+
+.qr-canvas-corner--tl {
+  top: 14px;
+  left: 14px;
+  border-top: 1.5px solid;
+  border-left: 1.5px solid;
+}
+
+.qr-canvas-corner--tr {
+  top: 14px;
+  right: 14px;
+  border-top: 1.5px solid;
+  border-right: 1.5px solid;
+}
+
+.qr-canvas-corner--bl {
+  bottom: 14px;
+  left: 14px;
+  border-bottom: 1.5px solid;
+  border-left: 1.5px solid;
+}
+
+.qr-canvas-corner--br {
+  bottom: 14px;
+  right: 14px;
+  border-bottom: 1.5px solid;
+  border-right: 1.5px solid;
+}
+
+/* Floating Actions Toolbar */
+.qr-actions-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 470px;
+}
+
+.qr-toolbar-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+}
+
+.qr-meta-specs {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #71717a;
+}
+
+.qr-meta-status {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  color: #059669;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.qr-toolbar-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
 /* ── Dashboard Table (Desktop) ── */
 .dashboard-table-container {
   width: 100%;
@@ -472,6 +693,12 @@ input::placeholder {
   .stat-card-value {
     font-size: 32px;
     margin: 10px 0 6px;
+  }
+
+  .qr-studio-layout,
+  .qr-workspace-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
   }
 
   .dashboard-table-header,
@@ -576,14 +803,20 @@ input::placeholder {
   }
 
   /* QR stacks to single column */
+  .qr-studio-layout,
+  .qr-workspace-grid,
   .qr-layout-grid {
     grid-template-columns: 1fr !important;
     gap: 32px !important;
   }
 
-  .qr-preview-box {
-    justify-self: center;
-    max-width: 100%;
+  .qr-canvas-pedestal {
+    max-width: 100% !important;
+    min-height: 320px !important;
+  }
+
+  .qr-actions-toolbar {
+    max-width: 100% !important;
   }
 
   /* Dashboard stats — single column */
