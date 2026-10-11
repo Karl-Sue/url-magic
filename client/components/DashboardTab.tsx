@@ -185,21 +185,102 @@ export function DashboardTab() {
   const offline = urls.filter((u) => u.status === "offline").length;
   const checked = urls.filter((u) => u.latency !== null);
   const avgLatency = checked.length ? Math.round(checked.reduce((a, b) => a + (b.latency ?? 0), 0) / checked.length) : null;
+  const uptimePct = urls.length > 0 ? Math.round((online / urls.length) * 100) : 0;
 
   return (
     <div>
-      {/* Stats */}
-      <div className="stats-grid-responsive" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1px", background: "#d8d8d8", border: "1px solid #d8d8d8", marginBottom: "56px" }}>
-        {[
-          { label: "Online",      value: online,               color: "#008800" },
-          { label: "Offline",     value: offline,              color: "#cc0000" },
-          { label: "Avg Latency", value: formatMs(avgLatency), color: "#111111" },
-        ].map((s) => (
-          <div key={s.label} style={{ background: "#ffffff", padding: "32px", textAlign: "center" }}>
-            <p style={{ fontSize: "40px", fontWeight: 600, fontFamily: "DM Sans, sans-serif", color: s.color, lineHeight: 1 }}>{s.value}</p>
-            <p style={{ fontSize: "12px", letterSpacing: "0.08em", textTransform: "uppercase", color: "#b0b0b0", marginTop: "10px", fontFamily: "DM Sans, sans-serif" }}>{s.label}</p>
+      {/* Telemetry Stats */}
+      <div className="stats-grid-responsive">
+        {/* Card 1: Online */}
+        <div className="stat-card">
+          <div className="stat-card-header">
+            <span className="stat-card-label">Online</span>
+            <span className="stat-card-badge" style={{ background: "#ecfdf5", color: "#065f46" }}>
+              <span className="live-beacon-dot" /> Live
+            </span>
           </div>
-        ))}
+          <div className="stat-card-value" style={{ color: "#059669" }}>
+            {online}
+          </div>
+          <p className="stat-card-subtext">
+            {urls.length > 0 ? `${uptimePct}% operational` : "No URLs tracked"}
+          </p>
+        </div>
+
+        {/* Card 2: Offline */}
+        <div className="stat-card">
+          <div className="stat-card-header">
+            <span className="stat-card-label">Offline</span>
+            {offline > 0 ? (
+              <span className="stat-card-badge" style={{ background: "#fef2f2", color: "#991b1b" }}>
+                <span className="alert-beacon-dot" /> Issue
+              </span>
+            ) : (
+              <span className="stat-card-badge" style={{ background: "#f4f4f5", color: "#71717a" }}>
+                All Clear
+              </span>
+            )}
+          </div>
+          <div className="stat-card-value" style={{ color: offline > 0 ? "#dc2626" : "#111111" }}>
+            {offline}
+          </div>
+          <p className="stat-card-subtext">
+            {offline === 0
+              ? "All endpoints reachable"
+              : `${offline} unreachable endpoint${offline > 1 ? "s" : ""}`}
+          </p>
+        </div>
+
+        {/* Card 3: Avg Latency */}
+        <div className="stat-card">
+          <div className="stat-card-header">
+            <span className="stat-card-label">Avg Latency</span>
+            <span
+              className="stat-card-badge"
+              style={{
+                background:
+                  avgLatency === null
+                    ? "#f4f4f5"
+                    : avgLatency < 500
+                    ? "#ecfdf5"
+                    : avgLatency < 1500
+                    ? "#fefce8"
+                    : "#fef2f2",
+                color:
+                  avgLatency === null
+                    ? "#71717a"
+                    : avgLatency < 500
+                    ? "#065f46"
+                    : avgLatency < 1500
+                    ? "#854d0e"
+                    : "#991b1b",
+              }}
+            >
+              {avgLatency === null
+                ? "Pending"
+                : avgLatency < 500
+                ? "Optimal"
+                : avgLatency < 1500
+                ? "Acceptable"
+                : "High Latency"}
+            </span>
+          </div>
+          <div className="stat-card-value" style={{ color: "#111111" }}>
+            {avgLatency === null ? (
+              "—"
+            ) : (
+              <>
+                {avgLatency}
+                <span className="stat-card-unit">ms</span>
+              </>
+            )}
+          </div>
+          <p className="stat-card-subtext">
+            {avgLatency === null
+              ? "Awaiting health check"
+              : `Across ${checked.length} response${checked.length === 1 ? "" : "s"}`}
+          </p>
+        </div>
       </div>
 
       {/* Add row */}
