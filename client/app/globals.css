@@ -264,6 +264,17 @@ input::placeholder {
 }
 
 /* ── Dashboard Table (Desktop) ── */
+.dashboard-table-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.dashboard-table-inner {
+  width: 100%;
+  min-width: fit-content;
+}
+
 .dashboard-table-header {
   display: grid;
   grid-template-columns: minmax(180px, 1fr) 90px 100px 140px 160px 52px;
@@ -275,6 +286,7 @@ input::placeholder {
   text-transform: uppercase;
   color: #b0b0b0;
   font-family: var(--font-sans);
+  min-width: 100%;
 }
 
 .dashboard-table-row {
@@ -285,14 +297,40 @@ input::placeholder {
   border-bottom: 1px solid #f2f2f2;
   align-items: center;
   transition: background 100ms;
+  min-width: 100%;
 }
 
 .dashboard-row-meta {
   display: contents;
 }
 
+/* ── Compact Desktop (1024px - 1274px) ───────────── */
+@media (min-width: 1024px) and (max-width: 1274.98px) {
+  .app-sidebar {
+    width: 250px;
+  }
+
+  .wordmark {
+    padding: 0 20px;
+  }
+
+  .page-header {
+    padding: 0 32px;
+  }
+
+  .app-content {
+    padding: 48px 32px 100px;
+  }
+
+  .dashboard-table-header,
+  .dashboard-table-row {
+    grid-template-columns: minmax(130px, 1fr) 72px 70px 96px 140px 52px;
+    gap: 12px;
+  }
+}
+
 /* ── Mobile & Tablet ─────────────────────────────── */
-@media (max-width: 1024px) {
+@media (max-width: 1023.98px) {
   .app-layout {
     flex-direction: column;
     height: 100dvh;

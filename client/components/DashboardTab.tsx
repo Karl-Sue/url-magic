@@ -20,27 +20,29 @@ const DotLottieReact = dynamic(
 function Sparkbar({ history }: { history: MonitoredUrl["history"] }) {
   const filled = history.slice(-SPARKBAR_SLOTS);
   const empty = SPARKBAR_SLOTS - filled.length;
-    const max = Math.max(...filled.map((h) => h.latency ?? 0), 1);
-    return (
-        <div style={{ display: "flex", alignItems: "flex-end", gap: "2px", height: "24px" }}>
-            {Array.from({ length: empty }).map((_, i) => (
-            <div key={`e${i}`} style={{ width: "7px", height: "4px", background: "#f0f0f0" }} />
-            ))}
-            {filled.map((h, i) => (
-                <div
-                    key={i}
-                    style={{
-                    width: "7px",
-                    height: `${Math.max(4, ((h.latency ?? 0) / max) * 24)}px`,
-                    background: h.ok ? "#111111" : "#cc0000",
-                    opacity: 0.45 + i * 0.03,
-                    transition: "height 200ms",
-                    }}
-                    title={h.ok ? `${h.latency}ms` : "Failed"}
-                />
-            ))}
-        </div>
-    );
+  const max = Math.max(...filled.map((h) => h.latency ?? 0), 1);
+  return (
+    <div style={{ display: "flex", alignItems: "flex-end", gap: "2px", height: "24px", width: "100%", maxWidth: "160px" }}>
+      {Array.from({ length: empty }).map((_, i) => (
+        <div key={`e${i}`} style={{ flex: 1, minWidth: "3px", maxWidth: "7px", height: "4px", background: "#f0f0f0" }} />
+      ))}
+      {filled.map((h, i) => (
+        <div
+          key={i}
+          style={{
+            flex: 1,
+            minWidth: "3px",
+            maxWidth: "7px",
+            height: `${Math.max(4, ((h.latency ?? 0) / max) * 24)}px`,
+            background: h.ok ? "#111111" : "#cc0000",
+            opacity: 0.45 + i * 0.03,
+            transition: "height 200ms",
+          }}
+          title={h.ok ? `${h.latency}ms` : "Failed"}
+        />
+      ))}
+    </div>
+  );
 }
 
 
@@ -259,24 +261,24 @@ export function DashboardTab() {
             <div className="dashboard-row-meta">
               <StatusLabel status={u.status} />
 
-              <span style={{ fontFamily: "DM Mono, monospace", fontSize: "13px", color: u.latency === null ? "#c0c0c0" : u.latency < 500 ? "#008800" : u.latency < 1500 ? "#b85c00" : "#cc0000" }}>
+              <span style={{ fontFamily: "DM Mono, monospace", fontSize: "13px", whiteSpace: "nowrap", color: u.latency === null ? "#c0c0c0" : u.latency < 500 ? "#008800" : u.latency < 1500 ? "#b85c00" : "#cc0000" }}>
                 {formatMs(u.latency)}
               </span>
             </div>
 
-            <span className="dashboard-col-checked" style={{ fontFamily: "DM Mono, monospace", fontSize: "13px", color: "#c0c0c0" }}>
+            <span className="dashboard-col-checked" style={{ fontFamily: "DM Mono, monospace", fontSize: "13px", color: "#c0c0c0", whiteSpace: "nowrap" }}>
               {formatTime(u.lastChecked)}
             </span>
 
-            <div className="dashboard-col-history">
+            <div className="dashboard-col-history" style={{ minWidth: 0 }}>
               <Sparkbar history={u.history} />
             </div>
 
-            <div className="dashboard-cell-actions" style={{ display: "flex", gap: "4px", justifyContent: "flex-end" }}>
+            <div className="dashboard-cell-actions" style={{ display: "flex", gap: "4px", justifyContent: "flex-end", flexShrink: 0 }}>
               <button
                 onClick={() => checkOne(u.id, u.url)}
                 title="Refresh"
-                style={{ width: "24px", height: "24px", border: "none", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#c8c8c8", transition: "color 100ms" }}
+                style={{ width: "24px", height: "24px", border: "none", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#c8c8c8", transition: "color 100ms", flexShrink: 0 }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#111111")}
                 onMouseLeave={(e) => (e.currentTarget.style.color = "#c8c8c8")}
               >
@@ -285,7 +287,7 @@ export function DashboardTab() {
               <button
                 onClick={() => removeUrl(u.id)}
                 title="Remove"
-                style={{ width: "24px", height: "24px", border: "none", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#c8c8c8", transition: "color 100ms" }}
+                style={{ width: "24px", height: "24px", border: "none", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#c8c8c8", transition: "color 100ms", flexShrink: 0 }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#cc0000")}
                 onMouseLeave={(e) => (e.currentTarget.style.color = "#c8c8c8")}
               >
