@@ -56,7 +56,7 @@ export default function HomePage() {
           }}
         >
           <Image
-            src="/images/logo4.png"
+            src="/images/logo.webp"
             alt="CatBite"
             width={541}
             height={461}
@@ -160,7 +160,7 @@ export default function HomePage() {
 
             <div className="header-mascot-pod" title="CatBite Mascot">
               <Image
-                src="/images/logo4.png"
+                src="/images/logo.webp"
                 alt="CatBite Mascot"
                 width={541}
                 height={461}
