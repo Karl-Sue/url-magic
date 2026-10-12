@@ -135,7 +135,7 @@ export default function HomePage() {
       <div className="app-main">
         {/* Page header */}
         <header className="page-top page-header">
-          <div className="page-header-text">
+          <div key={tab} className="page-header-text tab-header-enter">
             <div className="header-meta-row">
               <span className="header-studio-pill">
                 <span className="header-studio-pill-dot" />
@@ -173,13 +173,13 @@ export default function HomePage() {
 
         {/* Content */}
         <main className="app-content">
-          <section hidden={tab !== "shorten"}>
+          <section hidden={tab !== "shorten"} className="tab-content-section">
             <ShortenerTab />
           </section>
-          <section hidden={tab !== "qr"}>
+          <section hidden={tab !== "qr"} className="tab-content-section">
             <QRTab />
           </section>
-          <section hidden={tab !== "dashboard"}>
+          <section hidden={tab !== "dashboard"} className="tab-content-section">
             <DashboardTab />
           </section>
         </main>
