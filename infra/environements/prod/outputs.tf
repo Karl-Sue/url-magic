@@ -27,3 +27,14 @@ output "function_app_default_hostname" {
   value       = module.azure_function.default_hostname
   description = "Default hostname of the deployed Azure Function App."
 }
+
+output "static_web_app_default_hostname" {
+  value       = module.static_web_app.default_hostname
+  description = "Default hostname of the deployed Static Web App."
+}
+
+output "static_web_app_api_key" {
+  value       = module.static_web_app.api_key
+  description = "Deployment API token for Static Web App CI/CD."
+  sensitive   = true
+}

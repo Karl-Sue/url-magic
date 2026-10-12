@@ -65,3 +65,9 @@ variable "partition_key_path" {
   default     = "/shortCode"
 }
 
+variable "static_web_app_location" {
+  type        = string
+  description = "Azure region for Static Web App (must be supported region, e.g. eastus2)."
+  default     = "eastus2"
+}
+

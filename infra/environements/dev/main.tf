@@ -46,10 +46,10 @@ module "azure_function" {
   tags = local.tags
 }
 
-# TODO: Uncomment and configure Static Web App module when frontend is ready for deployment.
-# module "static_web_app" {
-#   source              = "../../modules/static_web_app"
-#   resource_group_name = azurerm_resource_group.rg.name
-#   location            = azurerm_resource_group.rg.location
-#   static_web_app_name = "swa-urlmagic-${var.environment}"
-# }
+module "static_web_app" {
+  source              = "../../modules/static_web_app"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = var.static_web_app_location
+  static_web_app_name = "swa-urlmagic-${var.environment}"
+  tags                = local.tags
+}

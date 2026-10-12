@@ -1,18 +1,33 @@
-# TODO: Define Static Web App module variables when frontend development begins.
 variable "resource_group_name" {
   type        = string
   description = "Resource group name."
-  default     = ""
 }
 
 variable "location" {
   type        = string
-  description = "Azure region."
+  description = "Azure region for Static Web App (e.g. eastus2, centralus, westeurope)."
   default     = "eastus2"
 }
 
 variable "static_web_app_name" {
   type        = string
   description = "Static Web App name."
-  default     = ""
+}
+
+variable "sku_tier" {
+  type        = string
+  description = "SKU tier for Static Web App (Free or Standard)."
+  default     = "Free"
+}
+
+variable "sku_size" {
+  type        = string
+  description = "SKU size for Static Web App (Free or Standard)."
+  default     = "Free"
+}
+
+variable "tags" {
+  type        = map(string)
+  description = "Tags to assign to the Static Web App."
+  default     = {}
 }
