@@ -892,33 +892,38 @@ input::placeholder {
 
   .header-mascot-pod {
     position: relative !important;
-    width: 58px !important;
-    height: 58px !important;
+    width: 54px !important;
+    height: 54px !important;
     border-radius: 50% !important;
     background: #ffffff !important;
-    border: 1.5px solid #eaeaea !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+    border: 1px solid #e4e4e7 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.02) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    overflow: hidden !important;
     flex-shrink: 0 !important;
-    padding: 4px !important;
+    padding: 3.5px !important;
     box-sizing: border-box !important;
     transition: transform 180ms ease, box-shadow 180ms ease !important;
   }
 
   .header-mascot-pod:hover {
     transform: translateY(-1px) scale(1.02) !important;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.03) !important;
   }
 
   .header-mascot-img {
     width: auto !important;
     height: 100% !important;
-    max-height: 48px !important;
+    max-height: 44px !important;
     object-fit: contain !important;
     display: block !important;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1)) !important;
+    transition: filter 180ms ease !important;
+  }
+
+  .header-mascot-pod:hover .header-mascot-img {
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.14)) !important;
   }
 
   .app-content {
