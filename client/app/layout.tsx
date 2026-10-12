@@ -13,9 +13,25 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CatBite — URLs Made Bite-Sized",
+  title: "CatBite - URLs Made Bite-Sized",
   description:
     "A privacy-first, secure URL shortener and QR generator that munches oversized links down to 6 characters.",
+  icons: {
+    icon: "/images/logo.webp",
+    shortcut: "/images/logo.webp",
+    apple: "/images/logo.webp",
+  },
+  openGraph: {
+    title: "CatBite - URLs Made Bite-Sized",
+    description:
+      "A privacy-first, secure URL shortener and QR generator that munches oversized links down to 6 characters.",
+    images: [
+      {
+        url: "/images/logo.webp",
+        alt: "CatBite Logo",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
