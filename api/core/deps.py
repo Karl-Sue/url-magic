@@ -28,7 +28,8 @@ def get_security_middleware() -> UrlSecurityMiddleware:
             api_key=settings.safe_browsing,
             client_id=settings.safe_browsing_client_id,
             client_version=settings.safe_browsing_client_version,
-        )
+        ),
+        redis_repo=redis_repo,
     )
     return UrlSecurityMiddleware(
         redis_repo=redis_repo,

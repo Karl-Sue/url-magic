@@ -1,4 +1,5 @@
 import asyncio
+import hashlib
 import ipaddress
 import json
 import socket
@@ -52,13 +53,35 @@ class GoogleSafeBrowsingConfig:
 
 
 class GoogleSafeBrowsingChecker:
-    def __init__(self, config: GoogleSafeBrowsingConfig | None = None):
+    def __init__(
+        self,
+        config: GoogleSafeBrowsingConfig | None = None,
+        redis_repo: RedisRepository | None = None,
+    ):
         self.config = config or GoogleSafeBrowsingConfig()
+        self.redis_repo = redis_repo
 
     async def is_safe(self, url: str) -> bool:
         if not self.config.api_key:
             return True
-        return await asyncio.to_thread(self._is_safe_sync, url)
+
+        url_hash = hashlib.sha256(url.strip().encode("utf-8")).hexdigest()
+
+        # 1. Check Redis cache first
+        if self.redis_repo:
+            cached_status = await self.redis_repo.get_safety_status(url_hash)
+            if cached_status is not None:
+                return cached_status
+
+        # 2. Cache miss: Call Google Safe Browsing API
+        is_safe = await asyncio.to_thread(self._is_safe_sync, url)
+
+        # 3. Store result in Redis (24h for safe, 48h for unsafe)
+        if self.redis_repo:
+            ttl = 86400 if is_safe else 172800
+            await self.redis_repo.set_safety_status(url_hash, is_safe, ttl=ttl)
+
+        return is_safe
 
     def _is_safe_sync(self, url: str) -> bool:
         payload = {
@@ -139,7 +162,8 @@ class UrlSecurityMiddleware:
                 api_key=self.config.safe_browsing,
                 client_id=self.config.safe_browsing_client_id,
                 client_version=self.config.safe_browsing_client_version,
-            )
+            ),
+            redis_repo=redis_repo,
         )
         self.rate_limiter = rate_limiter or RedisRateLimiter(redis_repo)
 

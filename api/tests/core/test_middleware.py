@@ -109,4 +109,23 @@ async def test_safe_browsing_allows_when_api_key_missing():
     checker = GoogleSafeBrowsingChecker(GoogleSafeBrowsingConfig(api_key=""))
     is_safe = await checker.is_safe("http://testsafebrowsing.appspot.com/s/malware.html")
     assert is_safe is True
+
+
+@pytest.mark.asyncio
+async def test_safe_browsing_uses_redis_cache():
+    """Test 6: Safe Browsing checks Redis before calling Google API."""
+    from unittest.mock import AsyncMock, patch
+
+    mock_redis = AsyncMock()
+    mock_redis.get_safety_status.return_value = True  # Cache HIT: safe
+
+    checker = GoogleSafeBrowsingChecker(
+        GoogleSafeBrowsingConfig(api_key="fake-key"),
+        redis_repo=mock_redis,
+    )
+
+    with patch.object(checker, "_is_safe_sync") as mock_api:
+        is_safe = await checker.is_safe("https://example.com/cached-url")
+        assert is_safe is True
+        mock_api.assert_not_called()  # Google API was avoided!
 

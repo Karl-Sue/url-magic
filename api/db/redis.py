@@ -85,3 +85,20 @@ class RedisRepository:
         except redis.RedisError as e:
             logger.warning(f"Redis rate-limit counter failed for {key}: {e}")
             raise
+
+    async def get_safety_status(self, url_hash: str) -> bool | None:
+        try:
+            client = await self._get_redis()
+            val = await client.get(f"safebrowsing:{url_hash}")
+            if val is not None:
+                return val == "1"
+        except redis.RedisError as e:
+            logger.warning(f"Redis get safety status failed for {url_hash}: {e}")
+        return None
+
+    async def set_safety_status(self, url_hash: str, is_safe: bool, ttl: int = 86400):
+        try:
+            client = await self._get_redis()
+            await client.setex(f"safebrowsing:{url_hash}", ttl, "1" if is_safe else "0")
+        except redis.RedisError as e:
+            logger.warning(f"Redis set safety status failed for {url_hash}: {e}")
