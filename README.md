@@ -2,9 +2,9 @@
 
 URL Magic is a cloud-native URL shortener, QR code generator, and concurrent URL health checker built on FastAPI, Next.js, and the Microsoft Azure ecosystem (Azure Functions, Cosmos DB, Redis, and Static Web Apps).
 
-```text
-Browser -> Azure Static Web Apps (SWA) -> Azure Functions / FastAPI -> Redis + Cosmos DB
-```
+## Architecture
+
+![CatBite Architecture](docs/architecture/catbite.svg)
 
 ---
 
@@ -13,6 +13,7 @@ Browser -> Azure Static Web Apps (SWA) -> Azure Functions / FastAPI -> Redis + C
 - [`api/`](api/) - FastAPI backend running on Azure Functions (Python 3.12+).
 - [`client/`](client/) - Next.js dashboard and frontend.
 - [`infra/`](infra/) - Terraform configuration for Azure cloud resources.
+- [`docs/`](docs/) - Architecture diagrams, design docs, and guides.
 - [`Makefile`](Makefile) - Local development orchestration targets.
 
 ---
