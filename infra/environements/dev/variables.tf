@@ -41,6 +41,13 @@ variable "safe_browsing_key" {
   default     = ""
 }
 
+variable "redis_url" {
+  type        = string
+  description = "Redis connection URL"
+  sensitive   = true
+  default     = ""
+}
+
 variable "python_version" {
   type        = string
   description = "Python runtime version for Azure Function App."

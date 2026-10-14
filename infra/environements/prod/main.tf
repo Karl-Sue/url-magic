@@ -42,6 +42,7 @@ module "azure_function" {
   cosmos_database   = module.cosmos_db.database_name
   cosmos_container  = module.cosmos_db.container_name
   safe_browsing_key = var.safe_browsing_key
+  redis_url         = var.redis_url
 
   tags = local.tags
 }

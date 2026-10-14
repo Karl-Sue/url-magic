@@ -70,6 +70,13 @@ variable "safe_browsing_key" {
   default     = ""
 }
 
+variable "redis_url" {
+  type        = string
+  description = "Redis connection URL"
+  sensitive   = true
+  default     = ""
+}
+
 variable "redis_host" {
   type        = string
   description = "Redis cache hostname."

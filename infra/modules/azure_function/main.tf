@@ -61,6 +61,7 @@ resource "azurerm_linux_function_app" "function_app" {
   app_settings = {
     "FUNCTIONS_WORKER_RUNTIME"              = "python"
     "SAFE_BROWSING"                         = var.safe_browsing_key
+    "REDIS_URL"                             = var.redis_url
     "REDIS_HOST"                            = var.redis_host
     "REDIS_PORT"                            = var.redis_port
     "COSMOS_ENDPOINT"                       = var.cosmos_endpoint
@@ -68,6 +69,7 @@ resource "azurerm_linux_function_app" "function_app" {
     "COSMOS_DATABASE"                       = var.cosmos_database
     "COSMOS_CONTAINER"                      = var.cosmos_container
     "APPLICATIONINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.app_insights.connection_string
+    "COOKIE_SECURE"                         = "true"
   }
 
   identity {
