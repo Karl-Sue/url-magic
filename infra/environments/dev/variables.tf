@@ -1,7 +1,7 @@
 variable "location" {
   type        = string
-  description = "Azure region for dev environment resources (Singapore data center)."
-  default     = "southeastasia"
+  description = "Azure region for dev environment resources (Hong Kong data center)."
+  default     = "eastasia"
 }
 
 variable "environment" {
