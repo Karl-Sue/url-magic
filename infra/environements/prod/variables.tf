@@ -1,7 +1,7 @@
 variable "location" {
   type        = string
-  description = "Azure region for prod environment resources."
-  default     = "eastus"
+  description = "Azure region for prod environment resources (Singapore data center)."
+  default     = "southeastasia"
 }
 
 variable "environment" {
@@ -74,7 +74,7 @@ variable "partition_key_path" {
 
 variable "static_web_app_location" {
   type        = string
-  description = "Azure region for Static Web App (must be supported region, e.g. eastus2)."
-  default     = "eastus2"
+  description = "Azure region for Static Web App."
+  default     = "eastasia"
 }
 

@@ -1,5 +1,5 @@
 # Example variable values for Development Environment
-location                = "eastus"
+location                = "southeastasia" # Singapore data center
 environment             = "dev"
 cosmos_account_name     = "cosmos-urlmagic-dev-unique"
 cosmos_database_name    = "urlsdb"
@@ -11,5 +11,5 @@ storage_account_name    = "sturlmagicdevunq"
 safe_browsing_key       = "YOUR_SAFE_BROWSING_API_KEY_HERE"
 python_version          = "3.11"
 redis_url               = "rediss://default:YOUR_PASSWORD@your-endpoint.upstash.io:6379"
-static_web_app_location = "eastus2"
+static_web_app_location = "eastasia"
 

@@ -5,8 +5,8 @@ variable "resource_group_name" {
 
 variable "location" {
   type        = string
-  description = "Azure region for Static Web App (e.g. eastus2, centralus, westeurope)."
-  default     = "eastus2"
+  description = "Azure region for Static Web App"
+  default     = "eastasia"
 }
 
 variable "static_web_app_name" {
