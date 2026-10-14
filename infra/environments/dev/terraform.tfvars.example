@@ -9,7 +9,7 @@ enable_cosmos_free_tier = true
 function_app_name       = "func-urlmagic-dev-unique"
 storage_account_name    = "sturlmagicdevunq"
 safe_browsing_key       = "YOUR_SAFE_BROWSING_API_KEY_HERE"
-python_version          = "3.11"
+python_version          = "3.12"
 redis_url               = "rediss://default:YOUR_PASSWORD@your-endpoint.upstash.io:6379"
 static_web_app_location = "eastasia"
 
