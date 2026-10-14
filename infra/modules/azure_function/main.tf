@@ -14,6 +14,7 @@ resource "azurerm_storage_account" "func_storage" {
   location                 = var.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
+  min_tls_version          = "TLS1_2"
 
   tags = var.tags
 }
@@ -48,10 +49,13 @@ resource "azurerm_linux_function_app" "function_app" {
   storage_account_name        = azurerm_storage_account.func_storage.name
   storage_account_access_key  = azurerm_storage_account.func_storage.primary_access_key
   functions_extension_version = "~4"
+  https_only                  = true
 
   site_config {
     application_insights_connection_string = azurerm_application_insights.app_insights.connection_string
     application_insights_key               = azurerm_application_insights.app_insights.instrumentation_key
+    ftps_state                             = "Disabled"
+    minimum_tls_version                    = "1.2"
 
     application_stack {
       python_version = var.python_version

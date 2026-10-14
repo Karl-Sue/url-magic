@@ -38,3 +38,14 @@ output "static_web_app_api_key" {
   description = "Deployment API token for Static Web App CI/CD."
   sensitive   = true
 }
+
+output "apim_gateway_url" {
+  value       = module.api_management.gateway_url
+  description = "API Management Gateway URL."
+}
+
+output "apim_api_endpoint" {
+  value       = module.api_management.api_endpoint
+  description = "Full APIM endpoint for the client frontend to call."
+}
+

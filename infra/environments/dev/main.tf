@@ -54,3 +54,18 @@ module "static_web_app" {
   static_web_app_name = "swa-urlmagic-${var.environment}"
   tags                = local.tags
 }
+
+module "api_management" {
+  source                        = "../../modules/api_management"
+  resource_group_name           = azurerm_resource_group.rg.name
+  location                      = azurerm_resource_group.rg.location
+  apim_name                     = "apim-urlmagic-${var.environment}"
+  function_app_name             = module.azure_function.function_app_name
+  function_app_default_hostname = module.azure_function.default_hostname
+  allowed_origins = [
+    "https://${module.static_web_app.default_hostname}",
+    "https://*.azurestaticapps.net"
+  ]
+  tags                          = local.tags
+}
+
