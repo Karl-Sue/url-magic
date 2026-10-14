@@ -4,6 +4,8 @@ from typing import Any, Optional
 
 import redis.asyncio as redis
 
+from core.config import settings
+
 logger = logging.getLogger(__name__)
 
 class RedisClient:
@@ -14,10 +16,10 @@ class RedisClient:
     _instance: Optional["RedisClient"] = None
     _client: redis.Redis | None = None
 
-    def __new__(cls, url: str = "redis://localhost:6379"):
+    def __new__(cls, url: str | None = None):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
-            cls._instance._url = url
+            cls._instance._url = url or settings.redis_url
         return cls._instance
 
     async def get_client(self) -> redis.Redis:
@@ -38,7 +40,7 @@ class RedisRepository:
     """
     Abstraction layer for caching URL documents in Redis.
     """
-    def __init__(self, redis_client: redis.Redis | None = None, url: str = "redis://localhost:6379"):
+    def __init__(self, redis_client: redis.Redis | None = None, url: str | None = None):
         self._redis_client_wrapper = RedisClient(url)
         self._redis = redis_client
 

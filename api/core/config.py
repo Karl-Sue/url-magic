@@ -30,6 +30,9 @@ class Settings(BaseSettings):
     cosmos_database: str
     cosmos_container: str
 
+    # Redis Cache settings
+    redis_url: str = "redis://localhost:6379"
+
     model_config = SettingsConfigDict(
         env_file=str(ENV_FILE),
         env_file_encoding="utf-8",
