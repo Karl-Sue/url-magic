@@ -67,4 +67,6 @@ module "api_management" {
     "https://*.azurestaticapps.net"
   ]
   tags                          = local.tags
+
+  depends_on = [module.azure_function]
 }

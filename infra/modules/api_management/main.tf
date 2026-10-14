@@ -20,9 +20,12 @@ resource "azurerm_api_management" "apim" {
 }
 
 # 2. Fetch the Host Keys from the secured Azure Function App
+# depends_on azurerm_api_management.apim defers evaluation until apply-time,
+# ensuring the Function App exists before Azure is queried for its keys.
 data "azurerm_function_app_host_keys" "func_keys" {
   name                = var.function_app_name
   resource_group_name = var.resource_group_name
+  depends_on          = [azurerm_api_management.apim]
 }
 
 # 3. Secure Backend link attaching the secret x-functions-key header
