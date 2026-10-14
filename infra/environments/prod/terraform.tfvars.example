@@ -10,6 +10,6 @@ function_app_name       = "func-urlmagic-prod-unique"
 storage_account_name    = "sturlmagicprodunq"
 safe_browsing_key       = "YOUR_PROD_SAFE_BROWSING_API_KEY_HERE"
 python_version          = "3.12"
-redis_url               = "rediss://default:gQAAAAAAA4FMAAIgcDJlNzhmNWM0YjdhNTY0ZTVhYWFhNzhjNGRlOTg1YzBmOQ@intent-gibbon-229708.upstash.io:6379"
+redis_url               = "rediss://default:YOUR_PASSWORD@your-endpoint.upstash.io:6379"
 static_web_app_location = "eastasia"
 
