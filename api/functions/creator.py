@@ -70,6 +70,7 @@ def issue_guest_cookies(response: Response, session_id: str) -> str:
     2. has_guest_session: HttpOnly=False, Secure=True, SameSite=Lax (JS Indicator)
     """
     token = sign_session_id(session_id)
+    samesite_policy: str = "none" if settings.cookie_secure else "lax"
 
     # 1. Security Cookie (HttpOnly - Cannot be read by JS)
     response.set_cookie(
@@ -78,7 +79,7 @@ def issue_guest_cookies(response: Response, session_id: str) -> str:
         max_age=settings.guest_session_max_age_seconds,
         httponly=True,
         secure=settings.cookie_secure,
-        samesite="lax",
+        samesite=samesite_policy,  # type: ignore[arg-type]
         path="/",
     )
 
@@ -89,7 +90,7 @@ def issue_guest_cookies(response: Response, session_id: str) -> str:
         max_age=settings.guest_session_max_age_seconds,
         httponly=False,
         secure=settings.cookie_secure,
-        samesite="lax",
+        samesite=samesite_policy,  # type: ignore[arg-type]
         path="/",
     )
 
