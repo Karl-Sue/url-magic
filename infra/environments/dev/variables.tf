@@ -51,7 +51,7 @@ variable "redis_url" {
 variable "python_version" {
   type        = string
   description = "Python runtime version for Azure Function App."
-  default     = "3.11"
+  default     = "3.12"
 }
 
 variable "cosmos_database_name" {

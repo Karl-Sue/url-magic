@@ -36,8 +36,8 @@ variable "sku_name" {
 
 variable "python_version" {
   type        = string
-  description = "Python runtime version for Azure Functions Linux app (e.g., 3.11, 3.12)."
-  default     = "3.11"
+  description = "Python runtime version for Azure Functions Linux app."
+  default     = "3.12"
 }
 
 variable "cosmos_endpoint" {
