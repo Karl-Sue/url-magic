@@ -68,7 +68,18 @@ async def shorten_url(
             detail="Failed to create short URL",
         ) from exc
 
-    base_url = str(request.base_url).rstrip("/")
+    forwarded_host = request.headers.get("x-forwarded-host")
+    if forwarded_host:
+        forwarded_proto = request.headers.get("x-forwarded-proto", "https")
+        base_url = f"{forwarded_proto}://{forwarded_host}".rstrip("/")
+    else:
+        raw_host = request.headers.get("host", "")
+        if "azurewebsites.net" in raw_host and raw_host.startswith("func-"):
+            apim_host = raw_host.replace("func-", "apim-").replace(".azurewebsites.net", ".azure-api.net")
+            base_url = f"https://{apim_host}"
+        else:
+            base_url = str(request.base_url).rstrip("/")
+
     if cookie_token and verify_session_id(cookie_token):
         issue_guest_cookies(response, creator_id)
     short_code = doc["shortCode"]

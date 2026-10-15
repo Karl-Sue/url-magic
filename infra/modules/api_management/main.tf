@@ -109,6 +109,12 @@ resource "azurerm_api_management_api_policy" "api_policy" {
                 <header>*</header>
             </allowed-headers>
         </cors>
+        <set-header name="X-Forwarded-Host" exists-action="override">
+            <value>@(context.Request.OriginalUrl.Host)</value>
+        </set-header>
+        <set-header name="X-Forwarded-Proto" exists-action="override">
+            <value>@(context.Request.OriginalUrl.Scheme)</value>
+        </set-header>
         <set-backend-service backend-id="${azurerm_api_management_backend.func_backend.name}" />
         <choose>
             <when condition='@(context.Request.MatchedParameters.ContainsKey("path"))'>
