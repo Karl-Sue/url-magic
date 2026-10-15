@@ -278,3 +278,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# output of npm run build
+out/
