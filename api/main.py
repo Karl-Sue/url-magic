@@ -46,7 +46,7 @@ app.add_middleware(
     expose_headers=["x-functions-key", "Ocp-Apim-Subscription-Key"],
 )
 
-@app.get("/health", tags=["Root"])
+@app.get("/api/v1/health", tags=["Root"])
 async def root():
     return {
         "status": "healthy",
