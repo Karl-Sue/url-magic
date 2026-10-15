@@ -45,24 +45,26 @@ resource "azurerm_api_management_backend" "func_backend" {
 
 # 4. API Definition
 resource "azurerm_api_management_api" "api" {
-  name                = "url-magic-api"
-  resource_group_name = var.resource_group_name
-  api_management_name = azurerm_api_management.apim.name
-  revision            = "1"
-  display_name        = "URL Magic API"
-  path                = "api/v1"
-  protocols           = ["https"]
-  service_url         = "https://${var.function_app_default_hostname}/api/v1"
+  name                  = "url-magic-api"
+  resource_group_name   = var.resource_group_name
+  api_management_name   = azurerm_api_management.apim.name
+  revision              = "1"
+  display_name          = "URL Magic API"
+  path                  = "api/v1"
+  protocols             = ["https"]
+  service_url           = "https://${var.function_app_default_hostname}/api/v1"
+  subscription_required = false
 }
 
-# 5a. Catch-All Operation for nested paths (/session/guest, /shorten, etc.)
+# 5a. Catch-All Operations for nested paths (/session/guest, /shorten, etc.)
 resource "azurerm_api_management_api_operation" "catch_all" {
-  operation_id        = "catch-all-operation"
+  for_each            = toset(["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"])
+  operation_id        = "catch-all-${lower(each.value)}"
   api_name            = azurerm_api_management_api.api.name
   api_management_name = azurerm_api_management.apim.name
   resource_group_name = var.resource_group_name
-  display_name        = "Catch-All Operations"
-  method              = "*"
+  display_name        = "Catch-All ${each.value}"
+  method              = each.value
   url_template        = "/{*path}"
 
   template_parameter {
@@ -72,14 +74,15 @@ resource "azurerm_api_management_api_operation" "catch_all" {
   }
 }
 
-# 5b. Root Operation for base path (/api/v1 and /api/v1/)
+# 5b. Root Operations for base path (/api/v1 and /api/v1/)
 resource "azurerm_api_management_api_operation" "root_op" {
-  operation_id        = "root-operation"
+  for_each            = toset(["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"])
+  operation_id        = "root-${lower(each.value)}"
   api_name            = azurerm_api_management_api.api.name
   api_management_name = azurerm_api_management.apim.name
   resource_group_name = var.resource_group_name
-  display_name        = "Root Operation"
-  method              = "*"
+  display_name        = "Root ${each.value}"
+  method              = each.value
   url_template        = "/"
 }
 
