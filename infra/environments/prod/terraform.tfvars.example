@@ -1,5 +1,5 @@
 # Example variable values for Production Environment
-location                = "eastasia" # Hong Kong data center
+location                = "japaneast" # Japan East (Tokyo) data center
 environment             = "prod"
 cosmos_account_name     = "cosmos-urlmagic-prod-unique"
 cosmos_database_name    = "urlsdb"

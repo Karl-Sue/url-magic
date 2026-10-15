@@ -1,5 +1,5 @@
 # Example variable values for Development Environment
-location                = "eastasia" # Hong Kong data center
+location                = "japaneast" # Japan East (Tokyo) data center
 environment             = "dev"
 cosmos_account_name     = "cosmos-urlmagic-dev-unique"
 cosmos_database_name    = "urlsdb"
