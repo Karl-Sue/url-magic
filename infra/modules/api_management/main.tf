@@ -76,9 +76,6 @@ resource "azurerm_api_management_api_policy" "api_policy" {
 <policies>
     <inbound>
         <base />
-        <set-backend-service backend-id="${azurerm_api_management_backend.func_backend.name}" />
-        <!-- Edge Rate Limiting: 60 requests per minute per client IP -->
-        <rate-limit-by-key calls="60" renewal-period="60" counter-key="@(context.Request.IpAddress)" />
         <cors allow-credentials="true">
             <allowed-origins>
 %{ for origin in var.allowed_origins ~}
@@ -92,6 +89,7 @@ resource "azurerm_api_management_api_policy" "api_policy" {
                 <header>*</header>
             </allowed-headers>
         </cors>
+        <set-backend-service backend-id="${azurerm_api_management_backend.func_backend.name}" />
     </inbound>
     <backend>
         <base />

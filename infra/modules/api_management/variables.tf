@@ -44,7 +44,7 @@ variable "tags" {
 
 variable "allowed_origins" {
   type        = list(string)
-  description = "List of allowed CORS origins for APIM (strict domain whitelist for prod)."
-  default     = ["https://*.azurestaticapps.net"]
+  description = "List of allowed CORS origins for APIM (exact FQDNs, wildcard subdomains not supported by APIM)."
+  default     = []
 }
 
