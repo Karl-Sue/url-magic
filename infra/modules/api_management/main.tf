@@ -55,18 +55,35 @@ resource "azurerm_api_management_api" "api" {
   service_url         = "https://${var.function_app_default_hostname}/api/v1"
 }
 
-# 5. Wildcard Operation forwarding all paths (/shorten, /qr, /health, etc.)
-resource "azurerm_api_management_api_operation" "all_ops" {
-  operation_id        = "all-operations"
+# 5a. Catch-All Operation for nested paths (/session/guest, /shorten, etc.)
+resource "azurerm_api_management_api_operation" "catch_all" {
+  operation_id        = "catch-all-operation"
   api_name            = azurerm_api_management_api.api.name
   api_management_name = azurerm_api_management.apim.name
   resource_group_name = var.resource_group_name
-  display_name        = "All Operations"
+  display_name        = "Catch-All Operations"
   method              = "*"
-  url_template        = "/*"
+  url_template        = "/{*path}"
+
+  template_parameter {
+    name     = "path"
+    type     = "string"
+    required = true
+  }
 }
 
-# 6. Policy forwarding traffic to backend with rate limiting and strict CORS
+# 5b. Root Operation for base path (/api/v1 and /api/v1/)
+resource "azurerm_api_management_api_operation" "root_op" {
+  operation_id        = "root-operation"
+  api_name            = azurerm_api_management_api.api.name
+  api_management_name = azurerm_api_management.apim.name
+  resource_group_name = var.resource_group_name
+  display_name        = "Root Operation"
+  method              = "*"
+  url_template        = "/"
+}
+
+# 6. Policy forwarding traffic to backend with CORS and dynamic path routing
 resource "azurerm_api_management_api_policy" "api_policy" {
   api_name            = azurerm_api_management_api.api.name
   api_management_name = azurerm_api_management.apim.name
@@ -90,6 +107,14 @@ resource "azurerm_api_management_api_policy" "api_policy" {
             </allowed-headers>
         </cors>
         <set-backend-service backend-id="${azurerm_api_management_backend.func_backend.name}" />
+        <choose>
+            <when condition='@(context.Request.MatchedParameters.ContainsKey("path"))'>
+                <rewrite-uri template="/{path}" copy-unmatched-params="true" />
+            </when>
+            <otherwise>
+                <rewrite-uri template="/" copy-unmatched-params="true" />
+            </otherwise>
+        </choose>
     </inbound>
     <backend>
         <base />
