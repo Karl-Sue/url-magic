@@ -78,6 +78,7 @@ resource "azurerm_linux_function_app" "function_app" {
     "COSMOS_CONTAINER"                      = var.cosmos_container
     "APPLICATIONINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.app_insights.connection_string
     "COOKIE_SECURE"                         = "true"
+    "PUBLIC_DOMAIN"                         = var.public_domain
   }
 
   identity {

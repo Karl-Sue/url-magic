@@ -83,7 +83,14 @@ async def shorten_url(
     if cookie_token and verify_session_id(cookie_token):
         issue_guest_cookies(response, creator_id)
     short_code = doc["shortCode"]
-    short_url = f"{base_url}/api/v1/{short_code}"
+
+    if settings.public_domain:
+        domain = settings.public_domain.strip().rstrip("/")
+        if not domain.startswith(("http://", "https://")):
+            domain = f"https://{domain}"
+        short_url = f"{domain}/{short_code}"
+    else:
+        short_url = f"{base_url}/api/v1/{short_code}"
 
     return URLShortenResponse(
         short_code=short_code,

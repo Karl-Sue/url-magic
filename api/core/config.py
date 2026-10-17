@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     cookie_secure: bool = False
 
     # URL safety and abuse-prevention settings
+    public_domain: str = "catbite.me"
     url_create_rate_limit_count: int = 10
     url_create_rate_limit_window_seconds: int = 300
     safe_browsing: str

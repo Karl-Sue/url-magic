@@ -63,7 +63,9 @@ module "api_management" {
   function_app_name             = module.azure_function.function_app_name
   function_app_default_hostname = module.azure_function.default_hostname
   allowed_origins = [
-    "https://${module.static_web_app.default_hostname}"
+    "https://${module.static_web_app.default_hostname}",
+    "https://catbite.me",
+    "https://www.catbite.me"
   ]
   tags                          = local.tags
 

@@ -94,3 +94,9 @@ variable "tags" {
   description = "Tags to apply to resources."
   default     = {}
 }
+
+variable "public_domain" {
+  type        = string
+  description = "Public custom domain for short URL generation (e.g. catbite.me)."
+  default     = "catbite.me"
+}

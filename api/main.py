@@ -32,6 +32,8 @@ app.add_middleware(
         "http://localhost:4280",
         "http://127.0.0.1:3000",
         "http://127.0.0.1:4280",
+        "https://catbite.me",
+        "https://www.catbite.me",
     ],
     allow_origin_regex=r"https://.*\.(azurestaticapps\.net|azure-api\.net)",
     allow_credentials=True,
