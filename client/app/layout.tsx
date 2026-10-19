@@ -13,6 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://catbite.me"),
   title: "CatBite - URLs Made Bite-Sized",
   description:
     "A privacy-first, secure URL shortener and QR generator that munches oversized links down to 6 characters.",
@@ -25,12 +26,25 @@ export const metadata: Metadata = {
     title: "CatBite - URLs Made Bite-Sized",
     description:
       "A privacy-first, secure URL shortener and QR generator that munches oversized links down to 6 characters.",
+    url: "https://catbite.me",
+    siteName: "CatBite",
     images: [
       {
-        url: "/images/logo.webp",
-        alt: "CatBite Logo",
+        url: "/images/opengraph.png?v=2",
+        width: 1200,
+        height: 630,
+        alt: "CatBite - URLs Made Bite-Sized",
       },
     ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "CatBite - URLs Made Bite-Sized",
+    description:
+      "A privacy-first, secure URL shortener and QR generator that munches oversized links down to 6 characters.",
+    images: ["/images/opengraph.png?v=2"],
   },
 };
 
