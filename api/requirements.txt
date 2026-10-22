@@ -191,6 +191,10 @@ colorama==0.4.6 ; sys_platform == 'win32' \
     --hash=sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44 \
     --hash=sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6
     # via qrcode
+confusable-homoglyphs==3.3.1 \
+    --hash=sha256:84c92cb79dc7f55aa290d0762b2349abd8dee4c16fbe6f99eac978d394e2e6a1 \
+    --hash=sha256:b995001c9b2e1b4cea0cf5f3840a7c79188a8cbbad053d693572bd8c1c1ec460
+    # via api
 fastapi==0.140.0 \
     --hash=sha256:e951c0a0d9540bf5d9a2a9e078fd415da2ab7e312d435139e7d9e2e7fe9f0b23 \
     --hash=sha256:f338951b82fd74ca8f843163aec43ea1a1ce84d515415a50fa98fa25572a5544
