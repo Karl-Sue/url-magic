@@ -10,6 +10,7 @@ from typing import Protocol
 from urllib.parse import urlparse
 
 from confusable_homoglyphs import confusables
+
 from core.config import settings
 from db.redis import RedisRepository
 
