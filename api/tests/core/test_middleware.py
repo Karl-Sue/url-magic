@@ -128,4 +128,78 @@ async def test_safe_browsing_uses_redis_cache():
         is_safe = await checker.is_safe("https://example.com/cached-url")
         assert is_safe is True
         mock_api.assert_not_called()  # Google API was avoided!
+
+
+# ---------------------------------------------------------------------------
+# IDN Homograph & RFC Hostname Security Tests
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def security_middleware():
+    rate_limiter = AsyncMock()
+    rate_limiter.increment.return_value = 1
+    reputation_checker = AsyncMock()
+    reputation_checker.is_safe.return_value = True
+
+    return UrlSecurityMiddleware(
+        redis_repo=AsyncMock(),
+        reputation_checker=reputation_checker,
+        rate_limiter=rate_limiter,
+    )
+
+
+@pytest.mark.asyncio
+async def test_blocks_mixed_script_google_homograph(security_middleware):
+    """Famous Attack 1: 'gооgle.com' with Cyrillic small 'о' (U+043E) replacing Latin 'o'."""
+    mixed_google = "https://g\u043e\u043egle.com"
+
+    with pytest.raises(BlockedUrlError, match="IDN Homograph attack detected: mixed scripts"):
+        await security_middleware.validate_url(mixed_google, creator_id="attacker")
+
+
+@pytest.mark.asyncio
+async def test_blocks_mixed_script_paypal_homograph(security_middleware):
+    """Famous Attack 2: 'pаypal.com' with Cyrillic small 'а' (U+0430) replacing Latin 'a'."""
+    mixed_paypal = "https://p\u0430ypal.com"
+
+    with pytest.raises(BlockedUrlError, match="IDN Homograph attack detected: mixed scripts"):
+        await security_middleware.validate_url(mixed_paypal, creator_id="attacker")
+
+
+@pytest.mark.asyncio
+async def test_blocks_zheng_apple_whole_script_homograph(security_middleware):
+    """Famous Attack 3: Xudong Zheng's 2017 attack 'аррӏе.com' (all-Cyrillic mimicking Latin 'apple')."""
+    # \u0430 = Cyrillic а, \u0440 = Cyrillic р, \u044f = Cyrillic я or \u04cf = Cyrillic palochka ӏ, \u0435 = Cyrillic е
+    zheng_apple = "https://\u0430\u0440\u0440\u04cf\u0435.com"
+
+    with pytest.raises(BlockedUrlError, match="IDN Homograph attack detected: label '.*' contains visual duplicate"):
+        await security_middleware.validate_url(zheng_apple, creator_id="attacker")
+
+
+@pytest.mark.asyncio
+async def test_blocks_punycode_encoded_homograph(security_middleware):
+    """Famous Attack 4: Zheng's Apple submitted already converted to raw Punycode (xn--80ak6aa92e.com)."""
+    punycode_apple = "https://xn--80ak6aa92e.com"
+
+    with pytest.raises(BlockedUrlError, match="IDN Homograph attack detected"):
+        await security_middleware.validate_url(punycode_apple, creator_id="attacker")
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "invalid_url, expected_error",
+    [
+        ("https://-leading-hyphen.com", "cannot start or end with a hyphen"),
+        ("https://trailing-hyphen-.com", "cannot start or end with a hyphen"),
+        ("https://singlelabel", "must contain at least a domain name and a TLD"),
+        (f"https://{'a' * 64}.com", "label empty or too long"),
+        (f"https://{'a.' * 130}com", "exceeds maximum RFC length of 253 characters"),
+    ],
+)
+async def test_blocks_rfc_hostname_violations(security_middleware, invalid_url, expected_error):
+    """RFC structural verification: labels <= 63 chars, host <= 253 chars, hyphen rules."""
+    with pytest.raises(BlockedUrlError, match=expected_error):
+        await security_middleware.validate_url(invalid_url, creator_id="attacker")
+
 

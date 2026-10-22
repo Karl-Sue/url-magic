@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from typing import Protocol
 from urllib.parse import urlparse
 
+from confusable_homoglyphs import confusables
 from core.config import settings
 from db.redis import RedisRepository
 
@@ -188,13 +189,91 @@ class UrlSecurityMiddleware:
 
 
 def _validate_destination(url: str) -> None:
-    parsed = urlparse(url)
+    clean_url = url.strip()
+    parsed = urlparse(clean_url)
     if parsed.scheme not in {"http", "https"}:
         raise BlockedUrlError("Only http and https URLs are allowed")
     if not parsed.hostname:
         raise BlockedUrlError("URL must include a hostname")
 
-    _ensure_public_hostname(parsed.hostname, parsed.port, parsed.scheme)
+    # Strip, lowercase, RFC structural check, and translate to Punycode
+    punycode_host, unicode_host = _normalize_and_validate_hostname(parsed.hostname)
+
+    # Check for IDN Homograph attacks via confusable_homoglyphs (UTS #39)
+    _check_homoglyph_attack(unicode_host)
+
+    # Ensure hostname resolves to public non-reserved IP
+    _ensure_public_hostname(punycode_host, parsed.port, parsed.scheme)
+
+
+def _normalize_and_validate_hostname(hostname: str) -> tuple[str, str]:
+    """Cleans, normalizes, validates RFC domain rules, and converts to Punycode."""
+    raw_host = hostname.strip().rstrip(".").lower()
+    if not raw_host:
+        raise BlockedUrlError("Hostname cannot be empty")
+
+    # Skip RFC/Punycode checks if host is a direct IP address
+    try:
+        ipaddress.ip_address(raw_host)
+        return raw_host, raw_host
+    except ValueError:
+        pass
+
+    # 1. Translate to Punycode (RFC 3492 / RFC 5891)
+    try:
+        punycode_host = raw_host.encode("idna").decode("ascii")
+    except UnicodeError as exc:
+        raise BlockedUrlError(f"Invalid internationalized domain name: {exc}") from exc
+
+    # Decode back to Unicode representation to handle cases where input was already Punycode
+    try:
+        unicode_host = punycode_host.encode("ascii").decode("idna")
+    except UnicodeError:
+        unicode_host = raw_host
+
+    # 2. RFC 1035 / RFC 1123 Structural hostname validation
+    if len(punycode_host) > 253:
+        raise BlockedUrlError("Hostname exceeds maximum RFC length of 253 characters")
+
+    labels = punycode_host.split(".")
+    if len(labels) < 2 and raw_host != "localhost":
+        raise BlockedUrlError("Hostname must contain at least a domain name and a TLD")
+
+    for label in labels:
+        if not label:
+            raise BlockedUrlError("Hostname contains empty label")
+        if len(label) > 63:
+            raise BlockedUrlError(f"Hostname label '{label}' exceeds maximum RFC length of 63 characters")
+        if label.startswith("-") or label.endswith("-"):
+            raise BlockedUrlError(f"Hostname label '{label}' cannot start or end with a hyphen")
+
+    return punycode_host, unicode_host
+
+
+def _check_homoglyph_attack(unicode_host: str) -> None:
+    """Inspects domain against Unicode Technical Standard #39 for Homograph attacks.
+
+    Detects:
+    1. Mixed-script attacks (e.g. 'google' with Cyrillic 'о').
+    2. Whole-script visual duplicates (e.g. all-Cyrillic 'аррӏе.com' mimicking Latin 'apple.com').
+    """
+    labels = unicode_host.split(".")
+    for label in labels:
+        if not label:
+            continue
+
+        # 1. Check for mixed-script attacks within the same label
+        if confusables.is_mixed_script(label):
+            raise BlockedUrlError(
+                f"IDN Homograph attack detected: mixed scripts found in label '{label}'"
+            )
+
+        # 2. Check for whole-script visual duplicates (confusable with Latin characters)
+        confusable_data = confusables.is_confusable(label, preferred_aliases=["latin"])
+        if confusable_data:
+            raise BlockedUrlError(
+                f"IDN Homograph attack detected: label '{label}' contains visual duplicate characters"
+            )
 
 
 def _ensure_public_hostname(hostname: str, port: int | None, scheme: str) -> None:
