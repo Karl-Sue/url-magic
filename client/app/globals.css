@@ -1187,11 +1187,11 @@ input::placeholder {
 }
 
 .loading-text {
-  font-family: var(--font-sans), sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  color: #888888;
-  letter-spacing: -0.01em;
+  font-family: var(--font-mono), monospace;
+  font-size: 15px;
+  font-weight: 400;
+  color: #777777;
+  letter-spacing: 0.01em;
 }
 
 @keyframes paw-fade {
