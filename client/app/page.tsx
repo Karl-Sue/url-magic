@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { QRTab, ShortenerTab, DashboardTab } from "@/components";
 import { useClient } from "@/hooks/useClient";
 
@@ -35,13 +35,58 @@ function TabIcon({ id }: { id: Tab }) {
 export default function HomePage() {
   const { ready, error } = useClient();
   const [tab, setTab] = useState<Tab>("shorten");
+  const [overlayMounted, setOverlayMounted] = useState(true);
   const { heading, sub } = TAB_TITLES[tab];
 
+  useEffect(() => {
+    if (ready) {
+      const timer = window.setTimeout(() => setOverlayMounted(false), 450);
+      return () => window.clearTimeout(timer);
+    }
+  }, [ready]);
+
   if (error) throw error;
-  if (!ready) return null;
 
   return (
-    <div className="app-layout">
+    <>
+      {overlayMounted && (
+        <div
+          className={`initial-loading ${ready ? "initial-loading--hidden" : ""}`}
+          role="status"
+          aria-live="polite"
+          aria-hidden={ready}
+        >
+          <div className="paw-trail" aria-hidden="true">
+            <Image
+              src="/icons/paw-print.svg"
+              alt=""
+              width={24}
+              height={24}
+              className="paw-step paw-step-1"
+              priority
+            />
+            <Image
+              src="/icons/paw-print.svg"
+              alt=""
+              width={24}
+              height={24}
+              className="paw-step paw-step-2"
+              priority
+            />
+            <Image
+              src="/icons/paw-print.svg"
+              alt=""
+              width={24}
+              height={24}
+              className="paw-step paw-step-3"
+              priority
+            />
+          </div>
+          <p className="loading-text">Waking up the cat...</p>
+        </div>
+      )}
+
+      <div className="app-layout">
 
       {/* ── Sidebar ── */}
       <aside className="app-sidebar">
@@ -206,5 +251,6 @@ export default function HomePage() {
         })}
       </nav>
     </div>
+    </>
   );
 }

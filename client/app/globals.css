@@ -1136,3 +1136,71 @@ input::placeholder {
     font-size: 28px;
   }
 }
+
+/* ── Initial Loading Pawprints Overlay ───────────────────────── */
+.initial-loading {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background-color: #ffffff;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 400ms ease, visibility 400ms ease;
+  pointer-events: auto;
+}
+
+.initial-loading--hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.initial-loading--hidden .paw-step {
+  animation-play-state: paused;
+}
+
+.paw-trail {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.paw-step {
+  animation: paw-fade 1.2s ease-in-out infinite;
+}
+
+.paw-step-1 {
+  animation-delay: 0s;
+}
+
+.paw-step-2 {
+  animation-delay: 0.25s;
+}
+
+.paw-step-3 {
+  animation-delay: 0.5s;
+}
+
+.loading-text {
+  font-family: var(--font-sans), sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #888888;
+  letter-spacing: -0.01em;
+}
+
+@keyframes paw-fade {
+  0%, 100% {
+    opacity: 0.2;
+    transform: translateY(0) scale(0.92);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-4px) scale(1);
+  }
+}
