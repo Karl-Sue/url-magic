@@ -98,8 +98,8 @@ jobs:
         run: |
           set -euo pipefail
           for environment in dev prod; do
-            terraform -chdir="infra/environements/$environment" init -backend=false -input=false
-            terraform -chdir="infra/environements/$environment" validate
+            terraform -chdir="infra/environments/$environment" init -backend=false -input=false
+            terraform -chdir="infra/environments/$environment" validate
           done
 
   frontend-format:
