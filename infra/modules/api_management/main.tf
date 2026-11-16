@@ -98,9 +98,9 @@ resource "azurerm_api_management_api_policy" "api_policy" {
         <base />
         <cors allow-credentials="true">
             <allowed-origins>
-%{ for origin in var.allowed_origins ~}
+%{for origin in var.allowed_origins~}
                 <origin>${origin}</origin>
-%{ endfor ~}
+%{endfor~}
             </allowed-origins>
             <allowed-methods preflight-result-max-age="300">
                 <method>*</method>

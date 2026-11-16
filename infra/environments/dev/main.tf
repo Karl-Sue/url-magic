@@ -65,7 +65,7 @@ module "api_management" {
   allowed_origins = [
     "https://${module.static_web_app.default_hostname}"
   ]
-  tags                          = local.tags
+  tags = local.tags
 
   depends_on = [module.azure_function]
 }

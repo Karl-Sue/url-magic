@@ -67,7 +67,7 @@ module "api_management" {
     "https://catbite.me",
     "https://www.catbite.me"
   ]
-  tags                          = local.tags
+  tags = local.tags
 
   depends_on = [module.azure_function]
 }
