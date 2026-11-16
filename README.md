@@ -4,7 +4,107 @@ URL Magic is a cloud-native URL shortener, QR code generator, and concurrent URL
 
 ## Architecture
 
-![CatBite Architecture](docs/architecture/catbite.svg)
+```mermaid
+flowchart TD
+
+subgraph group_client["Web client"]
+  node_dashboard["Dashboard<br/>[page.tsx]"]
+  node_shorten_ui["Shorten form<br/>[ShorternerTab.tsx]"]
+  node_qr_ui["QR interface<br/>[QRTab.tsx]"]
+  node_monitor_ui["Health dashboard<br/>[DashboardTab.tsx]"]
+end
+
+subgraph group_api["API workflows"]
+  node_api_app["FastAPI app<br/>[main.py]"]
+  node_api_routes["API routing<br/>[api.py]"]
+  node_url_ops["Shorten and QR<br/>[url_ops.py]"]
+  node_redirect_route["Redirect route<br/>[redirect.py]"]
+  node_health_route["Health route<br/>[health.py]"]
+  node_guest_session["Guest sessions<br/>[creator.py]"]
+  node_health_checks["Health checks<br/>[health.py]"]
+  node_qr_generator["QR generation<br/>[qr_generator.py]"]
+  node_shortener["Code generation<br/>[url_shortener.py]"]
+end
+
+subgraph group_security["URL protection"]
+  node_security["URL validation<br/>[middleware.py]"]
+  node_safe_browsing["Safe Browsing<br/>[middleware.py]"]
+  node_dependencies["Dependency wiring<br/>[deps.py]"]
+end
+
+subgraph group_storage["Persistence"]
+  node_query_repo["URL repository<br/>[cosmos_client.py]"]
+  node_cosmos[("Cosmos DB")]
+  node_redis_repo["Redis repository<br/>[redis.py]"]
+  node_redis[("Redis")]
+end
+
+node_visitor(("Visitor"))
+node_google["Google Safe Browsing"]
+
+node_visitor -->|"uses"| node_dashboard
+node_dashboard -.->|"shows"| node_shorten_ui
+node_dashboard -.->|"shows"| node_qr_ui
+node_dashboard -.->|"shows"| node_monitor_ui
+node_visitor -->|"calls API"| node_api_app
+node_api_app -->|"mounts routes"| node_api_routes
+node_api_routes -->|"registers"| node_url_ops
+node_api_routes -->|"registers"| node_redirect_route
+node_api_routes -->|"registers"| node_health_route
+node_api_routes -->|"creates session"| node_guest_session
+node_url_ops -->|"creates record"| node_query_repo
+node_url_ops -->|"generates QR"| node_qr_generator
+node_url_ops -->|"issues cookies"| node_guest_session
+node_redirect_route -->|"looks up link"| node_query_repo
+node_health_route -->|"runs checks"| node_health_checks
+node_dependencies -->|"configures"| node_query_repo
+node_dependencies -->|"provides"| node_redis_repo
+node_dependencies -->|"configures"| node_security
+node_security -->|"checks reputation"| node_safe_browsing
+node_security -->|"rate limits"| node_redis_repo
+node_safe_browsing -->|"queries"| node_google
+node_safe_browsing -->|"caches verdict"| node_redis_repo
+node_query_repo -->|"validates URL"| node_security
+node_query_repo -->|"generates code"| node_shortener
+node_query_repo -->|"reads and writes"| node_cosmos
+node_query_repo -->|"caches records"| node_redis_repo
+node_redis_repo -->|"stores cache"| node_redis
+node_shorten_ui -.->|"submits URL"| node_url_ops
+node_qr_ui -.->|"requests QR"| node_url_ops
+node_monitor_ui -.->|"requests checks"| node_health_route
+
+click node_dashboard "https://github.com/karl-sue/url-magic/blob/main/client/app/page.tsx"
+click node_shorten_ui "https://github.com/karl-sue/url-magic/blob/main/client/components/ShorternerTab.tsx"
+click node_qr_ui "https://github.com/karl-sue/url-magic/blob/main/client/components/QRTab.tsx"
+click node_monitor_ui "https://github.com/karl-sue/url-magic/blob/main/client/components/DashboardTab.tsx"
+click node_api_app "https://github.com/karl-sue/url-magic/blob/main/api/main.py"
+click node_api_routes "https://github.com/karl-sue/url-magic/blob/main/api/apim/v1/api.py"
+click node_url_ops "https://github.com/karl-sue/url-magic/blob/main/api/apim/v1/routes/url_ops.py"
+click node_redirect_route "https://github.com/karl-sue/url-magic/blob/main/api/apim/v1/routes/redirect.py"
+click node_health_route "https://github.com/karl-sue/url-magic/blob/main/api/apim/v1/routes/health.py"
+click node_guest_session "https://github.com/karl-sue/url-magic/blob/main/api/functions/creator.py"
+click node_health_checks "https://github.com/karl-sue/url-magic/blob/main/api/functions/health.py"
+click node_qr_generator "https://github.com/karl-sue/url-magic/blob/main/api/services/qr_generator.py"
+click node_shortener "https://github.com/karl-sue/url-magic/blob/main/api/services/url_shortener.py"
+click node_security "https://github.com/karl-sue/url-magic/blob/main/api/core/middleware.py"
+click node_safe_browsing "https://github.com/karl-sue/url-magic/blob/main/api/core/middleware.py"
+click node_dependencies "https://github.com/karl-sue/url-magic/blob/main/api/core/deps.py"
+click node_query_repo "https://github.com/karl-sue/url-magic/blob/main/api/db/cosmos_client.py"
+click node_redis_repo "https://github.com/karl-sue/url-magic/blob/main/api/db/redis.py"
+
+classDef toneNeutral fill:#f8fafc,stroke:#334155,stroke-width:1.5px,color:#0f172a
+classDef toneBlue fill:#dbeafe,stroke:#2563eb,stroke-width:1.5px,color:#172554
+classDef toneAmber fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+classDef toneMint fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+classDef toneRose fill:#ffe4e6,stroke:#e11d48,stroke-width:1.5px,color:#881337
+classDef toneIndigo fill:#e0e7ff,stroke:#4f46e5,stroke-width:1.5px,color:#312e81
+classDef toneTeal fill:#ccfbf1,stroke:#0f766e,stroke-width:1.5px,color:#134e4a
+class node_dashboard,node_shorten_ui,node_qr_ui,node_monitor_ui toneBlue
+class node_api_app,node_api_routes,node_url_ops,node_redirect_route,node_health_route,node_guest_session,node_health_checks,node_qr_generator,node_shortener toneAmber
+class node_security,node_safe_browsing,node_dependencies toneMint
+class node_query_repo,node_cosmos,node_redis_repo,node_redis toneRose
+class node_visitor,node_google toneIndigo
+```
 
 ---
 
