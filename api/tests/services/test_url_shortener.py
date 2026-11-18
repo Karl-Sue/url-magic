@@ -16,9 +16,11 @@ def test_base62_encoding_decoding():
         assert decoded == num, f"Failed for number {num}"
         assert len(encoded) >= 6
 
+
 def test_base62_invalid_char():
     with pytest.raises(ValueError):
         Base62Encoder.decode("Invalid!Char")
+
 
 def test_feistel_cipher_reversibility():
     cipher = FeistelCipher(key="test-secret-key", bits=36, rounds=4)
@@ -27,6 +29,7 @@ def test_feistel_cipher_reversibility():
         encrypted = cipher.encrypt(orig_id)
         decrypted = cipher.decrypt(encrypted)
         assert decrypted == orig_id, f"Failed reversibility for ID {orig_id}"
+
 
 def test_feistel_uniqueness_no_collisions():
     cipher = FeistelCipher(key="collision-test-key", bits=36, rounds=4)
@@ -38,15 +41,17 @@ def test_feistel_uniqueness_no_collisions():
         seen.add(encrypted)
     assert len(seen) == num_samples
 
+
 def test_snowflake_generator_uniqueness():
     gen = SnowflakeGenerator(worker_id=1)
     ids = [gen.generate_id() for _ in range(1000)]
     assert len(set(ids)) == 1000
     assert all(i > 0 for i in ids)
 
+
 def test_url_shortener_full_pipeline():
     shortener = URLShortener(secret_key="my-app-secret")
-    
+
     # Test short code generation with auto-generated Snowflake ID
     code1 = shortener.generate_short_code()
     assert isinstance(code1, str)

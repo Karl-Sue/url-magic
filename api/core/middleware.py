@@ -28,13 +28,11 @@ class RateLimitExceededError(UrlSecurityError):
 
 
 class UrlReputationChecker(Protocol):
-    async def is_safe(self, url: str) -> bool:
-        ...
+    async def is_safe(self, url: str) -> bool: ...
 
 
 class UrlRateLimiter(Protocol):
-    async def increment(self, key: str, ttl: int) -> int:
-        ...
+    async def increment(self, key: str, ttl: int) -> int: ...
 
 
 @dataclass(frozen=True, slots=True)
@@ -117,7 +115,9 @@ class GoogleSafeBrowsingChecker:
         except urllib.error.HTTPError as exc:
             if exc.code == 204:
                 return True
-            raise UrlSecurityError(f"Safe Browsing lookup failed with HTTP {exc.code}") from exc
+            raise UrlSecurityError(
+                f"Safe Browsing lookup failed with HTTP {exc.code}"
+            ) from exc
         except OSError as exc:
             raise UrlSecurityError("Safe Browsing lookup failed") from exc
 
@@ -149,7 +149,9 @@ class UrlSecurityMiddleware:
     ):
         base_config = config or UrlSecurityConfig()
         self.config = UrlSecurityConfig(
-            rate_limit_count=rate_limit_count if rate_limit_count is not None else base_config.rate_limit_count,
+            rate_limit_count=rate_limit_count
+            if rate_limit_count is not None
+            else base_config.rate_limit_count,
             rate_limit_window_seconds=(
                 rate_limit_window_seconds
                 if rate_limit_window_seconds is not None
@@ -244,9 +246,13 @@ def _normalize_and_validate_hostname(hostname: str) -> tuple[str, str]:
         if not label:
             raise BlockedUrlError("Hostname contains empty label")
         if len(label) > 63:
-            raise BlockedUrlError(f"Hostname label '{label}' exceeds maximum RFC length of 63 characters")
+            raise BlockedUrlError(
+                f"Hostname label '{label}' exceeds maximum RFC length of 63 characters"
+            )
         if label.startswith("-") or label.endswith("-"):
-            raise BlockedUrlError(f"Hostname label '{label}' cannot start or end with a hyphen")
+            raise BlockedUrlError(
+                f"Hostname label '{label}' cannot start or end with a hyphen"
+            )
 
     return punycode_host, unicode_host
 
@@ -312,7 +318,9 @@ def _ensure_public_ip(ip: ipaddress.IPv4Address | ipaddress.IPv6Address) -> None
             ip.is_unspecified,
         ]
     ):
-        raise BlockedUrlError("Private, loopback, and reserved IP ranges are not allowed")
+        raise BlockedUrlError(
+            "Private, loopback, and reserved IP ranges are not allowed"
+        )
 
 
 async def _enforce_rate_limit(

@@ -2,7 +2,7 @@
 
 > [!CAUTION]
 > **HIGH-RISK DESTRUCTIVE OPERATION**
-> 
+>
 > The scripts in this directory are intended **ONLY for disaster recovery or hard resets** when Terraform state becomes corrupt, inconsistent, or locked during deployment failures.
 >
 > Executing these scripts will **PERMANENTLY DELETE** all cloud resources in the selected environment, including:

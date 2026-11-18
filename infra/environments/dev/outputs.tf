@@ -48,4 +48,3 @@ output "apim_api_endpoint" {
   value       = module.api_management.api_endpoint
   description = "Full APIM endpoint for the client frontend to call."
 }
-

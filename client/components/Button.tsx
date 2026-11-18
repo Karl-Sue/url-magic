@@ -9,8 +9,8 @@ type ButtonProps = {
 } & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "className">;
 
 export function Button({
-  children, 
-  variant = "primary", 
+  children,
+  variant = "primary",
   small = false,
   type = "button",
   ...props

@@ -12,4 +12,3 @@ safe_browsing_key       = "YOUR_SAFE_BROWSING_API_KEY_HERE"
 python_version          = "3.12"
 redis_url               = "rediss://default:YOUR_PASSWORD@your-endpoint.upstash.io:6379"
 static_web_app_location = "eastasia"
-

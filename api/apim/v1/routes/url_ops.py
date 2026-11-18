@@ -18,13 +18,15 @@ from services.qr_generator import generate_qr_code
 router = APIRouter()
 
 
-@router.post("/shorten", response_model=URLShortenResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/shorten", response_model=URLShortenResponse, status_code=status.HTTP_201_CREATED
+)
 async def shorten_url(
     payload: URLShortenRequest,
     request: Request,
     response: Response,
     query_repo: URLQueryRepository = Depends(get_query_repository),
-):
+) -> URLShortenResponse:
     """Shortens a URL after checking security, SSRF, rate-limiting,
 
     and Google Safe Browsing reputation. Saves the record to Azure Cosmos DB.
@@ -34,7 +36,7 @@ async def shorten_url(
     # Extract guest_id from cookie or fallback to client IP
     cookie_token = request.cookies.get(settings.guest_cookie_name)
     creator_id = verify_session_id(cookie_token) if cookie_token else None
-    
+
     # Check X-Forwarded-For header if behind APIM / reverse proxy, fallback to request.client.host
     forwarded_for = request.headers.get("x-forwarded-for")
     if forwarded_for:
@@ -75,7 +77,9 @@ async def shorten_url(
     else:
         raw_host = request.headers.get("host", "")
         if "azurewebsites.net" in raw_host and raw_host.startswith("func-"):
-            apim_host = raw_host.replace("func-", "apim-").replace(".azurewebsites.net", ".azure-api.net")
+            apim_host = raw_host.replace("func-", "apim-").replace(
+                ".azurewebsites.net", ".azure-api.net"
+            )
             base_url = f"https://{apim_host}"
         else:
             base_url = str(request.base_url).rstrip("/")
@@ -102,7 +106,7 @@ async def shorten_url(
 
 
 @router.post("/qr")
-async def generate_url_qr(payload: QRCodeRequest):
+async def generate_url_qr(payload: QRCodeRequest) -> Response:
     """Generates a PNG QR code for the provided URL."""
     target_url = str(payload.url)
 

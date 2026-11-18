@@ -20,7 +20,7 @@ export function CopyButton({ text }: { text: string }) {
       setCopied(false);
     }
   }
-  
+
   return (
     <button
       type="button"

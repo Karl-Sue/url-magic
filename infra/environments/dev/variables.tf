@@ -77,4 +77,3 @@ variable "static_web_app_location" {
   description = "Azure region for Static Web App."
   default     = "eastasia"
 }
-

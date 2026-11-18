@@ -4,13 +4,13 @@ import time
 import httpx2
 from pydantic import HttpUrl
 
-from core.middleware import GoogleSafeBrowsingChecker, UrlSecurityError
+from core.middleware import UrlReputationChecker, UrlSecurityError
 from schemas.health_check import URLHealthStatus
 
 
 async def check_single_url_health(
     url_obj: HttpUrl,
-    safe_browsing_checker: GoogleSafeBrowsingChecker,
+    safe_browsing_checker: UrlReputationChecker,
     client: httpx2.AsyncClient,
 ) -> URLHealthStatus:
     url_str = str(url_obj)
@@ -37,7 +37,7 @@ async def check_single_url_health(
     try:
         response = await client.get(url_str, timeout=5.0, follow_redirects=True)
         latency_ms = round((time.perf_counter() - start_time) * 1000, 2)
-        
+
         status_label = "healthy" if response.is_success else "unhealthy"
         return URLHealthStatus(
             url=url_obj,
@@ -63,10 +63,10 @@ async def check_single_url_health(
 
 async def check_urls_health(
     urls: list[HttpUrl],
-    safe_browsing_checker: GoogleSafeBrowsingChecker,
+    safe_browsing_checker: UrlReputationChecker,
 ) -> list[URLHealthStatus]:
     """Checks safety, status, and latency concurrently for a bulk list of URLs."""
-    #TO DO: Temporary solution before setting up the Queue architecture
+    # TO DO: Temporary solution before setting up the Queue architecture
     semaphore = asyncio.Semaphore(20)
 
     async def limited_check(url: HttpUrl) -> URLHealthStatus:
@@ -77,9 +77,8 @@ async def check_urls_health(
                 client,
             )
 
-    async with httpx2.AsyncClient(headers={"User-Agent": "URL-Magic-HealthCheck/1.0"}) as client:
-        tasks = [
-            limited_check(url)
-            for url in urls
-        ]
+    async with httpx2.AsyncClient(
+        headers={"User-Agent": "URL-Magic-HealthCheck/1.0"}
+    ) as client:
+        tasks = [limited_check(url) for url in urls]
         return await asyncio.gather(*tasks)

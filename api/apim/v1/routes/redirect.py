@@ -21,9 +21,11 @@ router = APIRouter()
 async def handle_redirect(
     short_code: str,
     query_repo: URLQueryRepository = Depends(get_query_repository),
-):
+) -> RedirectResponse:
     """Resolves a Base62 short code and issues a low-latency 301 HTTP redirect."""
-    original_url, status_code = await get_redirect_url(short_code, query_repo=query_repo)
+    original_url, status_code = await get_redirect_url(
+        short_code, query_repo=query_repo
+    )
 
     if status_code == 301 and original_url:
         return RedirectResponse(

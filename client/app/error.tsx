@@ -21,7 +21,7 @@ export default function ErrorPage({ error, reset }: ErrorProps) {
   return (
     <main className="error-page min-h-screen flex items-center justify-center p-6">
       <div className="max-w-2xl w-full text-center flex flex-col items-center">
-        
+
         {/* Animated Vector Illustration */}
         <div className="w-80 h-80 sm:w-96 sm:h-96 mb-6 flex items-center justify-center">
           <DotLottieReact

@@ -45,4 +45,3 @@ export function useHealthCheck() {
 
   return { checkUrlsHealth };
 }
-

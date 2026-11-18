@@ -17,13 +17,13 @@ router = APIRouter()
 async def check_health(
     payload: HealthCheckRequest,
     security_middleware: UrlSecurityMiddleware = Depends(get_security_middleware),
-):
+) -> HealthCheckResponse:
     """Bulk health and latency checker endpoint.
-    
+
     1. Runs Google Safe Browsing check for each URL.
     2. Performs concurrent HTTP requests to record latency_ms and status_code.
     """
     safe_browsing_checker = security_middleware.reputation_checker
     results = await check_urls_health(payload.urls, safe_browsing_checker)
-    
+
     return HealthCheckResponse(results=results)

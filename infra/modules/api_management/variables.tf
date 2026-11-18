@@ -47,4 +47,3 @@ variable "allowed_origins" {
   description = "List of allowed CORS origins for APIM (exact FQDNs, wildcard subdomains not supported by APIM)."
   default     = []
 }
-

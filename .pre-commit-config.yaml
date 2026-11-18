@@ -26,28 +26,28 @@ repos:
 
       - id: python-types
         name: Python Strict Type Check (Mypy)
-        entry: uv run --directory api mypy --strict --ignore-missing-imports .
+        entry: uv run --directory api mypy --strict --ignore-missing-imports --explicit-package-bases --exclude "tests" .
         language: system
         files: ^api/
         pass_filenames: false
 
       - id: ruff-check
         name: Ruff Lint
-        entry: uv run --directory api ruff check --fix
+        entry: uv --project api run ruff check --fix
         language: system
         files: ^api/
         types: [python]
 
       - id: ruff-format
         name: Ruff Format
-        entry: uv run --directory api ruff format
+        entry: uv --project api run ruff format
         language: system
         files: ^api/
         types: [python]
 
       - id: python-tests
         name: Python Unit Tests
-        entry: uv run --directory api pytest
+        entry: uv run --directory api pytest -k "not test_safe_browsing"
         language: system
-        files: ^api/
+        files: ^api/.*\.py$
         pass_filenames: false

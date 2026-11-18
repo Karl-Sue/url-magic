@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import Any, Optional
+from typing import Any, Optional, Self, cast
 
 import redis.asyncio as redis
 
@@ -8,29 +8,29 @@ from core.config import settings
 
 logger = logging.getLogger(__name__)
 
+
 class RedisClient:
     """
     Singleton connection manager for Redis.
     Reuses connection pool across requests.
     """
+
     _instance: Optional["RedisClient"] = None
     _client: redis.Redis | None = None
+    _url: str = ""
 
-    def __new__(cls, url: str | None = None):
+    def __new__(cls, url: str | None = None) -> Self:
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance._url = url or settings.redis_url
-        return cls._instance
+        return cast(Self, cls._instance)
 
     async def get_client(self) -> redis.Redis:
         if self._client is None:
-            self._client = redis.Redis.from_url(
-                self._url,
-                decode_responses=True
-            )
+            self._client = redis.Redis.from_url(self._url, decode_responses=True)
         return self._client
 
-    async def close(self):
+    async def close(self) -> None:
         if self._client:
             await self._client.close()
             self._client = None
@@ -40,6 +40,7 @@ class RedisRepository:
     """
     Abstraction layer for caching URL documents in Redis.
     """
+
     def __init__(self, redis_client: redis.Redis | None = None, url: str | None = None):
         self._redis_client_wrapper = RedisClient(url)
         self._redis = redis_client
@@ -54,12 +55,14 @@ class RedisRepository:
             client = await self._get_redis()
             data = await client.get(f"url:{short_code}")
             if data:
-                return json.loads(data)
+                return cast(dict[str, Any], json.loads(data))
         except redis.RedisError as e:
             logger.warning(f"Redis get failed for {short_code}: {e}")
         return None
 
-    async def set_url(self, short_code: str, document: dict[str, Any], ttl: int = 3600):
+    async def set_url(
+        self, short_code: str, document: dict[str, Any], ttl: int = 3600
+    ) -> None:
         try:
             client = await self._get_redis()
             serialized = json.dumps(document)
@@ -70,7 +73,7 @@ class RedisRepository:
         except redis.RedisError as e:
             logger.warning(f"Redis set failed for {short_code}: {e}")
 
-    async def delete_url(self, short_code: str):
+    async def delete_url(self, short_code: str) -> None:
         try:
             client = await self._get_redis()
             await client.delete(f"url:{short_code}")
@@ -83,7 +86,7 @@ class RedisRepository:
             value = await client.incr(key)
             if value == 1:
                 await client.expire(key, ttl)
-            return value
+            return int(value)
         except redis.RedisError as e:
             logger.warning(f"Redis rate-limit counter failed for {key}: {e}")
             raise
@@ -98,7 +101,9 @@ class RedisRepository:
             logger.warning(f"Redis get safety status failed for {url_hash}: {e}")
         return None
 
-    async def set_safety_status(self, url_hash: str, is_safe: bool, ttl: int = 86400):
+    async def set_safety_status(
+        self, url_hash: str, is_safe: bool, ttl: int = 86400
+    ) -> None:
         try:
             client = await self._get_redis()
             await client.setex(f"safebrowsing:{url_hash}", ttl, "1" if is_safe else "0")

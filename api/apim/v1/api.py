@@ -6,6 +6,7 @@ from schemas.session import GuestSessionResponse
 
 api_router = APIRouter(prefix="/api/v1")
 
+
 # Guest Session route
 @api_router.get(
     "/session/guest",
@@ -13,7 +14,7 @@ api_router = APIRouter(prefix="/api/v1")
     tags=["session"],
     summary="Issue a new guest session token and dual cookies",
 )
-async def get_guest_session(response: Response):
+async def get_guest_session(response: Response) -> GuestSessionResponse:
     """Issues a new guest session token (`guest_session` HttpOnly) and
 
     presence flag (`has_guest_session` JS readable) cookie.

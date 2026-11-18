@@ -9,7 +9,9 @@ from fastapi import Response
 from core.config import settings
 
 # Regex to strip dangerous script/HTML tags and javascript: URIs
-DANGEROUS_PATTERNS = re.compile(r"(?i)<script\b[^<]*?>.*?</script>|javascript:|data:text/html")
+DANGEROUS_PATTERNS = re.compile(
+    r"(?i)<script\b[^<]*?>.*?</script>|javascript:|data:text/html"
+)
 
 
 def sanitize_input(value: str) -> str:
@@ -105,4 +107,3 @@ def create_guest_session(response: Response) -> str:
     new_session_id = generate_guest_id()
     issue_guest_cookies(response, new_session_id)
     return new_session_id
-

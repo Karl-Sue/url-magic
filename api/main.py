@@ -48,12 +48,14 @@ app.add_middleware(
     expose_headers=["x-functions-key", "Ocp-Apim-Subscription-Key"],
 )
 
+
 @app.get("/api/v1/health", tags=["Root"])
-async def root():
+async def root() -> dict[str, str]:
     return {
         "status": "healthy",
         "service": "URL Magic API",
         "gateway": "Azure API Management",
     }
+
 
 app.include_router(api_router)

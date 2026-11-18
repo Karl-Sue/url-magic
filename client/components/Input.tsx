@@ -12,9 +12,9 @@ type InputProps = {
 };
 
 export function Input({
-  value, 
-  onChange, 
-  onKeyDown, 
+  value,
+  onChange,
+  onKeyDown,
   placeholder,
   autoFocus = false,
   ariaLabel,

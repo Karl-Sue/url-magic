@@ -16,7 +16,9 @@ client = TestClient(app)
 
 def test_sanitize_input():
     # Strips inline script and escapes HTML
-    dirty = "<script>alert('xss')</script><a href='javascript:alert(1)'>Click</a> & test"
+    dirty = (
+        "<script>alert('xss')</script><a href='javascript:alert(1)'>Click</a> & test"
+    )
     clean = sanitize_input(dirty)
     assert "<script>" not in clean
     assert "javascript:" not in clean
@@ -47,4 +49,3 @@ def test_get_guest_session_endpoint():
     cookies = response.cookies
     assert settings.guest_cookie_name in cookies
     assert cookies[settings.guest_flag_cookie_name] == "true"
-

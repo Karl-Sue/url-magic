@@ -5,6 +5,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 BASE_DIR = Path(__file__).resolve().parent.parent
 ENV_FILE = BASE_DIR / ".env"
 
+
 class Settings(BaseSettings):
     # FastAPI Application Settings
     app_name: str = "URL Magic"
@@ -21,15 +22,15 @@ class Settings(BaseSettings):
     public_domain: str = "catbite.me"
     url_create_rate_limit_count: int = 10
     url_create_rate_limit_window_seconds: int = 300
-    safe_browsing: str
+    safe_browsing: str = ""
     safe_browsing_client_id: str = "url-magic"
     safe_browsing_client_version: str = "1.0.0"
 
     # Azure Cosmos DB settings
     cosmos_endpoint: str = "https://localhost:8081"
-    cosmos_key: str
-    cosmos_database: str
-    cosmos_container: str
+    cosmos_key: str = ""
+    cosmos_database: str = ""
+    cosmos_container: str = ""
 
     # Redis Cache settings
     redis_url: str = "redis://localhost:6379"
@@ -38,7 +39,8 @@ class Settings(BaseSettings):
         env_file=str(ENV_FILE),
         env_file_encoding="utf-8",
         case_sensitive=False,
-        extra="ignore"
+        extra="ignore",
     )
-    
-settings = Settings() 
+
+
+settings = Settings()

@@ -18,9 +18,9 @@ async def test_read_record_cache_hit():
         "creatorId": "anon_123",
         "createdAt": "2026-08-07T12:27:16Z",
         "ttl": 31536000,
-        "clickCount": 0
+        "clickCount": 0,
     }
-    
+
     repo = URLQueryRepository(redis_repo=mock_redis)
     res = await repo.read_record("aX9zQ1")
 
@@ -41,7 +41,7 @@ async def test_read_record_cache_miss_cosmos_hit():
         "creatorId": "anon_123",
         "createdAt": "2026-08-07T12:27:16Z",
         "ttl": 31536000,
-        "clickCount": 0
+        "clickCount": 0,
     }
     mock_container.read_item.return_value = doc
 
@@ -52,7 +52,9 @@ async def test_read_record_cache_miss_cosmos_hit():
     res = await repo.read_record("aX9zQ1")
 
     assert res["shortCode"] == "aX9zQ1"
-    mock_container.read_item.assert_called_once_with(item="aX9zQ1", partition_key="aX9zQ1")
+    mock_container.read_item.assert_called_once_with(
+        item="aX9zQ1", partition_key="aX9zQ1"
+    )
     mock_redis.set_url.assert_called_once_with("aX9zQ1", doc, ttl=31536000)
 
 
@@ -70,7 +72,7 @@ async def test_create_record_duplicate_retry():
         "creatorId": "anon_123",
         "createdAt": "2026-08-07T12:27:16Z",
         "ttl": 31536000,
-        "clickCount": 0
+        "clickCount": 0,
     }
     mock_container.create_item.side_effect = [CosmosResourceExistsError(), created_doc]
 
@@ -82,7 +84,9 @@ async def test_create_record_duplicate_retry():
         redis_repo=mock_redis,
         security_middleware=mock_security,
     )
-    res = await repo.create_record(original_url="https://example.com", creator_id="anon_123")
+    res = await repo.create_record(
+        original_url="https://example.com", creator_id="anon_123"
+    )
 
     assert mock_container.create_item.call_count == 2
     assert res == created_doc

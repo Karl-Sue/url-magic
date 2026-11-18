@@ -6,6 +6,7 @@ import time
 BASE62_ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 BASE = len(BASE62_ALPHABET)
 
+
 class Base62Encoder:
     """Encodes and decodes integers to/from Base62 strings."""
 
@@ -20,7 +21,7 @@ class Base62Encoder:
         while num > 0:
             num, remainder = divmod(num, BASE)
             chars.append(BASE62_ALPHABET[remainder])
-        
+
         encoded = "".join(reversed(chars))
         if len(encoded) < min_length:
             encoded = BASE62_ALPHABET[0] * (min_length - len(encoded)) + encoded
@@ -40,12 +41,14 @@ class Base62Encoder:
 class FeistelCipher:
     """
     Format-Preserving Feistel Cipher for pseudorandom integer permutation.
-    
+
     Provides 1-to-1 bijective obfuscation over a custom bit space (default 36-bit),
     guaranteeing zero collisions while rendering sequential numbers unpredictable.
     """
 
-    def __init__(self, key: str = "url-magic-secret-key", bits: int = 36, rounds: int = 4):
+    def __init__(
+        self, key: str = "url-magic-secret-key", bits: int = 36, rounds: int = 4
+    ):
         if bits % 2 != 0:
             raise ValueError("Bits must be an even number")
         self.bits = bits
@@ -90,7 +93,7 @@ class FeistelCipher:
 class SnowflakeGenerator:
     """
     Thread-safe 64-bit Snowflake ID Generator.
-    
+
     Layout:
     - 1 bit: Unused (sign bit)
     - 41 bits: Timestamp in milliseconds since Epoch
@@ -155,7 +158,12 @@ class URLShortener:
     Feistel Pseudorandom Permutation, and Base62 Encoding.
     """
 
-    def __init__(self, secret_key: str = "url-magic-secret-key", worker_id: int = 1, bits: int = 36):
+    def __init__(
+        self,
+        secret_key: str = "url-magic-secret-key",
+        worker_id: int = 1,
+        bits: int = 36,
+    ):
         self.id_generator = SnowflakeGenerator(worker_id=worker_id)
         self.cipher = FeistelCipher(key=secret_key, bits=bits)
 
@@ -166,7 +174,7 @@ class URLShortener:
         """
         if numeric_id is None:
             numeric_id = self.id_generator.generate_id()
-        
+
         scrambled_id = self.cipher.encrypt(numeric_id)
         return Base62Encoder.encode(scrambled_id, min_length=6)
 

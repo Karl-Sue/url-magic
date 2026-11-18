@@ -169,7 +169,7 @@ Open **three separate terminal windows** to run the services:
   ```bash
   make api
   ```
-  *Runs Azure Functions host on `http://localhost:7071` (Node 20).*  
+  *Runs Azure Functions host on `http://localhost:7071` (Node 20).*
   *(Fallback: if Core Tools is unavailable, run `cd api && uv run uvicorn main:app --reload --port 8000`)*
 
 - **Terminal 2 (Frontend Client):**

@@ -33,16 +33,16 @@ def generate_qr_code(
         box_size=box_size,
         border=border,
     )
-    
+
     # Add payload URL
     qr.add_data(url)
-    
+
     # Optimize compilation grid fits exact content size
     qr.make(fit=True)
-    
+
     # Render PIL image
     img: PilImage = qr.make_image(fill_color=fill_color, back_color=back_color)
-    
+
     # Save image to bytes buffer (in-memory stream)
     buffer = io.BytesIO()
     img.save(buffer, format="PNG")

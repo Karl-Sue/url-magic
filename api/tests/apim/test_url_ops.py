@@ -43,7 +43,9 @@ def test_shorten_url_success():
 
 def test_shorten_url_ssrf_blocked():
     mock_repo = AsyncMock()
-    mock_repo.create_record.side_effect = BlockedUrlError("Private, loopback, and reserved IP ranges are not allowed")
+    mock_repo.create_record.side_effect = BlockedUrlError(
+        "Private, loopback, and reserved IP ranges are not allowed"
+    )
 
     app.dependency_overrides[get_query_repository] = lambda: mock_repo
     try:
@@ -85,6 +87,7 @@ def test_generate_qr_code_endpoint():
     assert response.headers["content-type"] == "image/png"
     assert len(response.content) > 0
 
+
 def test_shorten_url_x_forwarded_for_header():
     mock_doc = {
         "id": "aB3k9X",
@@ -116,4 +119,3 @@ def test_shorten_url_x_forwarded_for_header():
         )
     finally:
         app.dependency_overrides.clear()
-

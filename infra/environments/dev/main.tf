@@ -69,4 +69,3 @@ module "api_management" {
 
   depends_on = [module.azure_function]
 }
-

@@ -44,7 +44,9 @@ async def test_blocks_rate_limited_user():
     )
 
     with pytest.raises(RateLimitExceededError):
-        await middleware.validate_url("https://example.com", creator_id="user-1", client_ip="8.8.8.8")
+        await middleware.validate_url(
+            "https://example.com", creator_id="user-1", client_ip="8.8.8.8"
+        )
 
 
 @pytest.mark.asyncio
@@ -60,7 +62,9 @@ async def test_allows_safe_url():
         rate_limiter=rate_limiter,
     )
 
-    await middleware.validate_url("https://example.com", creator_id="user-1", client_ip="8.8.8.8")
+    await middleware.validate_url(
+        "https://example.com", creator_id="user-1", client_ip="8.8.8.8"
+    )
 
     rate_limiter.increment.assert_any_await("rate-limit:url-create:ip:8.8.8.8", 300)
     rate_limiter.increment.assert_any_await("rate-limit:url-create:user:user-1", 300)
@@ -74,7 +78,9 @@ async def test_allows_safe_url():
 @pytest.mark.asyncio
 async def test_safe_browsing_allows_clean_url():
     """Test 1: Clean/safe URLs return True."""
-    checker = GoogleSafeBrowsingChecker(GoogleSafeBrowsingConfig(api_key=settings.safe_browsing))
+    checker = GoogleSafeBrowsingChecker(
+        GoogleSafeBrowsingConfig(api_key=settings.safe_browsing)
+    )
     is_safe = await checker.is_safe("https://example.com")
     assert is_safe is True
 
@@ -82,24 +88,36 @@ async def test_safe_browsing_allows_clean_url():
 @pytest.mark.asyncio
 async def test_safe_browsing_detects_malware_url():
     """Test 2: Real Google Safe Browsing test URL for MALWARE returns False."""
-    checker = GoogleSafeBrowsingChecker(GoogleSafeBrowsingConfig(api_key=settings.safe_browsing))
-    is_safe = await checker.is_safe("http://testsafebrowsing.appspot.com/s/malware.html")
+    checker = GoogleSafeBrowsingChecker(
+        GoogleSafeBrowsingConfig(api_key=settings.safe_browsing)
+    )
+    is_safe = await checker.is_safe(
+        "http://testsafebrowsing.appspot.com/s/malware.html"
+    )
     assert is_safe is False
 
 
 @pytest.mark.asyncio
 async def test_safe_browsing_detects_phishing_url():
     """Test 3: Real Google Safe Browsing test URL for SOCIAL_ENGINEERING (phishing) returns False."""
-    checker = GoogleSafeBrowsingChecker(GoogleSafeBrowsingConfig(api_key=settings.safe_browsing))
-    is_safe = await checker.is_safe("http://testsafebrowsing.appspot.com/s/phishing.html")
+    checker = GoogleSafeBrowsingChecker(
+        GoogleSafeBrowsingConfig(api_key=settings.safe_browsing)
+    )
+    is_safe = await checker.is_safe(
+        "http://testsafebrowsing.appspot.com/s/phishing.html"
+    )
     assert is_safe is False
 
 
 @pytest.mark.asyncio
 async def test_safe_browsing_detects_unwanted_software_url():
     """Test 4: Real Google Safe Browsing test URL for UNWANTED_SOFTWARE returns False."""
-    checker = GoogleSafeBrowsingChecker(GoogleSafeBrowsingConfig(api_key=settings.safe_browsing))
-    is_safe = await checker.is_safe("http://testsafebrowsing.appspot.com/s/unwanted.html")
+    checker = GoogleSafeBrowsingChecker(
+        GoogleSafeBrowsingConfig(api_key=settings.safe_browsing)
+    )
+    is_safe = await checker.is_safe(
+        "http://testsafebrowsing.appspot.com/s/unwanted.html"
+    )
     assert is_safe is False
 
 
@@ -107,7 +125,9 @@ async def test_safe_browsing_detects_unwanted_software_url():
 async def test_safe_browsing_allows_when_api_key_missing():
     """Test 5: Fallback behavior when API key is not configured."""
     checker = GoogleSafeBrowsingChecker(GoogleSafeBrowsingConfig(api_key=""))
-    is_safe = await checker.is_safe("http://testsafebrowsing.appspot.com/s/malware.html")
+    is_safe = await checker.is_safe(
+        "http://testsafebrowsing.appspot.com/s/malware.html"
+    )
     assert is_safe is True
 
 
@@ -154,7 +174,9 @@ async def test_blocks_mixed_script_google_homograph(security_middleware):
     """Famous Attack 1: 'gооgle.com' with Cyrillic small 'о' (U+043E) replacing Latin 'o'."""
     mixed_google = "https://g\u043e\u043egle.com"
 
-    with pytest.raises(BlockedUrlError, match="IDN Homograph attack detected: mixed scripts"):
+    with pytest.raises(
+        BlockedUrlError, match="IDN Homograph attack detected: mixed scripts"
+    ):
         await security_middleware.validate_url(mixed_google, creator_id="attacker")
 
 
@@ -163,7 +185,9 @@ async def test_blocks_mixed_script_paypal_homograph(security_middleware):
     """Famous Attack 2: 'pаypal.com' with Cyrillic small 'а' (U+0430) replacing Latin 'a'."""
     mixed_paypal = "https://p\u0430ypal.com"
 
-    with pytest.raises(BlockedUrlError, match="IDN Homograph attack detected: mixed scripts"):
+    with pytest.raises(
+        BlockedUrlError, match="IDN Homograph attack detected: mixed scripts"
+    ):
         await security_middleware.validate_url(mixed_paypal, creator_id="attacker")
 
 
@@ -173,7 +197,10 @@ async def test_blocks_zheng_apple_whole_script_homograph(security_middleware):
     # \u0430 = Cyrillic а, \u0440 = Cyrillic р, \u044f = Cyrillic я or \u04cf = Cyrillic palochka ӏ, \u0435 = Cyrillic е
     zheng_apple = "https://\u0430\u0440\u0440\u04cf\u0435.com"
 
-    with pytest.raises(BlockedUrlError, match="IDN Homograph attack detected: label '.*' contains visual duplicate"):
+    with pytest.raises(
+        BlockedUrlError,
+        match="IDN Homograph attack detected: label '.*' contains visual duplicate",
+    ):
         await security_middleware.validate_url(zheng_apple, creator_id="attacker")
 
 
@@ -197,9 +224,9 @@ async def test_blocks_punycode_encoded_homograph(security_middleware):
         (f"https://{'a.' * 130}com", "exceeds maximum RFC length of 253 characters"),
     ],
 )
-async def test_blocks_rfc_hostname_violations(security_middleware, invalid_url, expected_error):
+async def test_blocks_rfc_hostname_violations(
+    security_middleware, invalid_url, expected_error
+):
     """RFC structural verification: labels <= 63 chars, host <= 253 chars, hyphen rules."""
     with pytest.raises(BlockedUrlError, match=expected_error):
         await security_middleware.validate_url(invalid_url, creator_id="attacker")
-
-
