@@ -1,0 +1,53 @@
+repos:
+  # 1. General hygiene
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+
+  # 2. Terraform (Canonical formatting)
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.97.4
+    hooks:
+      - id: terraform_fmt
+
+  # 3. Local Fast Checks (Matching CI)
+  - repo: local
+    hooks:
+      - id: client-lint
+        name: Client ESLint
+        entry: npm --prefix client run lint
+        language: system
+        files: ^client/
+        pass_filenames: false
+
+      - id: python-types
+        name: Python Strict Type Check (Mypy)
+        entry: uv run --directory api mypy --strict --ignore-missing-imports .
+        language: system
+        files: ^api/
+        pass_filenames: false
+
+      - id: ruff-check
+        name: Ruff Lint
+        entry: uv run --directory api ruff check --fix
+        language: system
+        files: ^api/
+        types: [python]
+
+      - id: ruff-format
+        name: Ruff Format
+        entry: uv run --directory api ruff format
+        language: system
+        files: ^api/
+        types: [python]
+
+      - id: python-tests
+        name: Python Unit Tests
+        entry: uv run --directory api pytest
+        language: system
+        files: ^api/
+        pass_filenames: false
