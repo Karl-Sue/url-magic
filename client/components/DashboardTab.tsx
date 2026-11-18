@@ -18,14 +18,14 @@ const DotLottieReact = dynamic(
 
 function AnimatedNumber({ value, duration = 1400 }: { value: number; duration?: number }) {
   const [displayValue, setDisplayValue] = useState(value);
-  const startValueRef = useRef(value);
+  const displayValueRef = useRef(value);
   const startTimeRef = useRef<number | null>(null);
 
   useEffect(() => {
-    startValueRef.current = displayValue;
+    const startValue = displayValueRef.current;
     startTimeRef.current = null;
 
-    if (startValueRef.current === value) return;
+    if (startValue === value) return;
 
     let animId: number;
     const animate = (timestamp: number) => {
@@ -34,7 +34,8 @@ function AnimatedNumber({ value, duration = 1400 }: { value: number; duration?: 
       const progress = Math.min(elapsed / duration, 1);
       // Calmer easeOutQuart curve with smooth deceleration
       const ease = 1 - Math.pow(1 - progress, 4);
-      const current = Math.round(startValueRef.current + (value - startValueRef.current) * ease);
+      const current = Math.round(startValue + (value - startValue) * ease);
+      displayValueRef.current = current;
       setDisplayValue(current);
 
       if (progress < 1) {
