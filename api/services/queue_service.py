@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import Any
+from typing import Any, Self, cast
 
 from azure.core.exceptions import AzureError
 from azure.storage.queue import TextBase64EncodePolicy
@@ -15,10 +15,10 @@ class QueueService:
     _instance: "QueueService | None" = None
     _client: QueueClient | None = None
 
-    def __new__(cls) -> "QueueService":
+    def __new__(cls) -> Self:
         if cls._instance is None:
             cls._instance = super().__new__(cls)
-        return cls._instance
+        return cast(Self, cls._instance)
 
     def _get_client(self) -> QueueClient:
         if self._client is None:
@@ -41,17 +41,23 @@ class QueueService:
             return True
         except AzureError as exc:
             # Auto-create queue if not present yet in Azurite/local dev
-            if getattr(exc, "error_code", None) == "QueueNotFound" or "QueueNotFound" in str(exc):
+            if getattr(
+                exc, "error_code", None
+            ) == "QueueNotFound" or "QueueNotFound" in str(exc):
                 try:
                     await client.create_queue()
                     await client.send_message(message)
                     return True
-                except AzureError as create_exc:  # noqa: BLE001
-                    logger.warning(f"Failed to auto-create queue and send: {create_exc}")
-            logger.warning(f"Failed to enqueue click for {event_data.get('short_code')}: {exc}")
+                except AzureError as create_exc:
+                    logger.warning(
+                        f"Failed to auto-create queue and send: {create_exc}"
+                    )
+            logger.warning(
+                f"Failed to enqueue click for {event_data.get('short_code')}: {exc}"
+            )
             return False
-        except Exception as exc:  # noqa: BLE001
-            logger.exception(f"Unexpected error enqueuing click: {exc}")
+        except Exception:
+            logger.exception("Unexpected error enqueuing click")
             return False
 
     async def close(self) -> None:

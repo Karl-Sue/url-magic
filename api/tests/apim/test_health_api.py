@@ -59,8 +59,7 @@ def test_health_check_endpoint_accepts_100_urls(monkeypatch):
 
     urls = [f"https://example-{index}.com" for index in range(100)]
     expected_results = [
-        URLHealthStatus(url=url, status="healthy", status_code=200)
-        for url in urls
+        URLHealthStatus(url=url, status="healthy", status_code=200) for url in urls
     ]
     mock_check = AsyncMock(return_value=expected_results)
     monkeypatch.setattr(health_route, "check_urls_health", mock_check)

@@ -266,5 +266,7 @@ class AnalyticsRepository:
             result = await container.create_item(body=doc)
             return cast(dict[str, Any], result)
         except CosmosResourceExistsError:
-            logger.info(f"Duplicate click event '{doc.get('id')}' already exists, skipping.")
+            logger.info(
+                f"Duplicate click event '{doc.get('id')}' already exists, skipping."
+            )
             return doc

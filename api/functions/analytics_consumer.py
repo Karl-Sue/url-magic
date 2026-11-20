@@ -17,5 +17,7 @@ async def handle_click_event_message(
     event = ClickEvent(**data)
     repo = repo or AnalyticsRepository()
     saved = await repo.save_click_event(event.model_dump())
-    logger.info(f"Persisted click event {event.event_id} for short_code '{event.short_code}'")
+    logger.info(
+        f"Persisted click event {event.event_id} for short_code '{event.short_code}'"
+    )
     return saved

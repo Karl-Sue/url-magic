@@ -1,5 +1,6 @@
-import pytest
 from unittest.mock import AsyncMock, patch
+
+import pytest
 
 from schemas.analytics import ClickEvent
 from services.queue_service import QueueService

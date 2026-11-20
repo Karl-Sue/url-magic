@@ -2,6 +2,7 @@ import json
 from unittest.mock import AsyncMock
 
 import pytest
+from pydantic import ValidationError
 
 from functions.analytics_consumer import handle_click_event_message
 
@@ -19,7 +20,9 @@ async def test_handle_click_event_message_success() -> None:
     body_str = json.dumps(payload)
 
     mock_repo = AsyncMock()
-    mock_repo.save_click_event = AsyncMock(return_value={"id": "evt-abc-123", **payload})
+    mock_repo.save_click_event = AsyncMock(
+        return_value={"id": "evt-abc-123", **payload}
+    )
 
     result = await handle_click_event_message(body_str, repo=mock_repo)
     assert result["id"] == "evt-abc-123"
@@ -32,7 +35,7 @@ async def test_handle_click_event_message_invalid_payload() -> None:
     invalid_body = json.dumps({"invalid": "data"})
     mock_repo = AsyncMock()
 
-    with pytest.raises(Exception):
+    with pytest.raises(ValidationError):
         await handle_click_event_message(invalid_body, repo=mock_repo)
     mock_repo.save_click_event.assert_not_awaited()
 
@@ -49,7 +52,9 @@ async def test_save_click_event_idempotency_skips_existing() -> None:
     mock_cm.get_analytics_container = AsyncMock(return_value=mock_container)
 
     repo = AnalyticsRepository(connection_manager=mock_cm)
-    result = await repo.save_click_event({"event_id": "duplicate-id", "short_code": "abc"})
+    result = await repo.save_click_event(
+        {"event_id": "duplicate-id", "short_code": "abc"}
+    )
 
     assert result["id"] == "duplicate-id"
     mock_container.create_item.assert_awaited_once()

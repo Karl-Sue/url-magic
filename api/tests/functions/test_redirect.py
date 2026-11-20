@@ -22,7 +22,7 @@ async def test_get_redirect_url_success():
     }
 
     url, status_code = await get_redirect_url("aB3k9X", query_repo=mock_repo)
-    assert status_code == 301
+    assert status_code == 302
     assert url == "https://example.com/destination"
     mock_repo.read_record.assert_called_once_with("aB3k9X")
 
@@ -47,12 +47,14 @@ async def test_get_redirect_url_invalid_format():
 
 def test_redirect_http_endpoint_success():
     mock_repo = AsyncMock()
-    mock_repo.read_record.return_value = {"originalUrl": "https://example.com/destination"}
+    mock_repo.read_record.return_value = {
+        "originalUrl": "https://example.com/destination"
+    }
 
     app.dependency_overrides[get_query_repository] = lambda: mock_repo
     try:
         response = client.get("/api/v1/aB3k9X")
-        assert response.status_code == 301
+        assert response.status_code == 302
         assert response.headers["location"] == "https://example.com/destination"
     finally:
         app.dependency_overrides.clear()
