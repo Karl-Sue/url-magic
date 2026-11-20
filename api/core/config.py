@@ -31,6 +31,11 @@ class Settings(BaseSettings):
     cosmos_key: str = ""
     cosmos_database: str = ""
     cosmos_container: str = ""
+    cosmos_analytics_container: str = ""
+
+    # Azure Storage Queue settings
+    queue_connection_string: str = "UseDevelopmentStorage=true"
+    queue_name: str = "click-events"
 
     # Redis Cache settings
     redis_url: str = "redis://localhost:6379"

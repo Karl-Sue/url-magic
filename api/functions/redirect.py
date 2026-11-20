@@ -24,7 +24,7 @@ async def get_redirect_url(
     try:
         record = await query_repo.read_record(short_code)
         if record and "originalUrl" in record:
-            return record["originalUrl"], 301
+            return record["originalUrl"], 302
 
         return None, 404
     except Exception as exc:  # noqa: BLE001
